@@ -60,13 +60,30 @@ hotfix/<slug>-<issue>   точечный фикс живого домена
 ## Структура
 
 ```
-packages/           общие пакеты: ui, fonar, insight, quiz, explain, seo, analytics, legal, config
+packages/           общие пакеты: ui, fonar, insight, media, quiz, explain, seo, analytics, legal, config
 templates/landing/  скелет страницы, фиксированный порядок секций
 schemas/            landing.schema.json, quiz.schema.json
 tooling/            create / validate / build / uniqueness / forbidden
 landings/_example/  шаблон ветки
 docs/memory/        реестр доменов и принятые решения
 ```
+
+## Медиа
+
+Рендеры, планировки и видео лежат в `landings/<slug>/public` и описываются блоком
+`config.media`. Собрать блок из уже загруженных файлов:
+
+```bash
+npm run import:media -- --slug <slug> --write
+```
+
+Импортёр читает размеры из заголовков файлов (`width`/`height` в разметке, без прыжков
+при загрузке) и группирует планировки по типам вилл. `alt` он не выдумывает: ставит
+`[ДАННЫЕ]`, которые обязан заполнить человек.
+
+Валидатор проверяет, что каждый файл из конфига действительно лежит в `public/`,
+и не пропускает видео, подсунутое ссылкой на файлообменник: только id ролика
+на YouTube или Vimeo. Плеер грузится по клику, до этого на странице лежит картинка.
 
 ## Проверки
 

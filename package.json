@@ -13,6 +13,7 @@
     "preview": "astro preview",
     "new:landing": "node tooling/create-landing.mjs",
     "validate:landing": "node tooling/validate-landing.mjs",
+    "import:media": "node tooling/import-media.mjs",
     "build:landing": "node tooling/build-landing.mjs",
     "check": "astro check",
     "audit:uniqueness": "node tooling/check-uniqueness.mjs"

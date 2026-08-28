@@ -445,6 +445,136 @@
         }
       }
     },
+    "media": {
+      "description": "Рендеры, планировки и видео ветки. Файлы лежат в landings/<slug>/public.",
+      "type": "object",
+      "properties": {
+        "galleryTitle": {
+          "type": "string"
+        },
+        "gallery": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "src",
+              "alt"
+            ],
+            "properties": {
+              "src": {
+                "type": "string",
+                "pattern": "^/",
+                "description": "Путь внутри public/ ветки. Внешние ссылки запрещены: чужой хост отвалится или замедлит домен."
+              },
+              "alt": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Что на кадре. Пустой alt не проходит: это и доступность, и органика."
+              },
+              "caption": {
+                "type": "string"
+              },
+              "label": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "plansTitle": {
+          "type": "string"
+        },
+        "plans": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "unit",
+              "label",
+              "sheets"
+            ],
+            "properties": {
+              "unit": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9-]+$",
+                "description": "Идентификатор типа: используется в id вкладки."
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1
+              },
+              "note": {
+                "type": "string"
+              },
+              "sheets": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "src",
+                    "alt"
+                  ],
+                  "properties": {
+                    "src": {
+                      "type": "string",
+                      "pattern": "^/",
+                      "description": "Путь внутри public/ ветки. Внешние ссылки запрещены: чужой хост отвалится или замедлит домен."
+                    },
+                    "alt": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "Что на кадре. Пустой alt не проходит: это и доступность, и органика."
+                    },
+                    "caption": {
+                      "type": "string"
+                    },
+                    "label": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "videoTitle": {
+          "type": "string"
+        },
+        "video": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "provider",
+              "id",
+              "title"
+            ],
+            "properties": {
+              "provider": {
+                "type": "string",
+                "enum": [
+                  "youtube",
+                  "vimeo"
+                ],
+                "description": "Только хостинг. Гигабайтный mp4 с Drive страницу убьёт."
+              },
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "title": {
+                "type": "string",
+                "minLength": 1
+              },
+              "poster": {
+                "type": "string",
+                "pattern": "^/"
+              }
+            }
+          }
+        }
+      }
+    },
     "budget": {
       "type": "object",
       "properties": {

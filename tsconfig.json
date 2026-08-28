@@ -6,6 +6,7 @@
       "@ui/*": ["packages/ui/*"],
       "@fonar/*": ["packages/fonar/*"],
       "@insight/*": ["packages/insight/*"],
+      "@media/*": ["packages/media/*"],
       "@quiz/*": ["packages/quiz/*"],
       "@explain/*": ["packages/explain/*"],
       "@seo/*": ["packages/seo/*"],

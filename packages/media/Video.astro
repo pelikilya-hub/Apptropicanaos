@@ -1,0 +1,96 @@
+---
+// Видео через фасад: до клика на странице лежит картинка, а не iframe.
+// Плеер тянет сотни килобайт стороннего кода и ставит куки — грузим его
+// только когда человек действительно нажал play.
+import { resolveImage } from './resolve.mjs';
+
+interface Item {
+  provider: 'youtube' | 'vimeo';
+  id: string;
+  title: string;
+  poster?: string;
+}
+interface Props { slug: string; items: Item[]; title?: string; eyebrow?: string }
+const { slug, items = [], title, eyebrow } = Astro.props;
+
+const embed = (v: Item) =>
+  v.provider === 'youtube'
+    ? `https://www.youtube-nocookie.com/embed/${v.id}?autoplay=1&rel=0`
+    : `https://player.vimeo.com/video/${v.id}?autoplay=1`;
+
+// Постер из ветки, а если его нет — превью с самого хостинга.
+const poster = (v: Item) => {
+  if (v.poster) {
+    const r = resolveImage({ src: v.poster, alt: v.title }, slug);
+    if (!r.missing) return r;
+  }
+  return v.provider === 'youtube'
+    ? { src: `https://i.ytimg.com/vi/${v.id}/maxresdefault.jpg`, alt: v.title, width: 1280, height: 720 }
+    : null;
+};
+
+const videos = items.map((v) => ({ ...v, embed: embed(v), poster: poster(v) }));
+---
+{videos.length > 0 && (
+  <section id="video" class="bg-ink text-paper py-16 md:py-24">
+    <div class="container-page">
+      {eyebrow && (
+        <p class="font-ui text-xs uppercase tracking-[0.18em] text-sand mb-3">{eyebrow}</p>
+      )}
+      {title && (
+        <h2 class="font-display text-[1.75rem] md:text-[2.5rem] max-w-measure mb-8">{title}</h2>
+      )}
+
+      <div class="grid gap-8 md:grid-cols-2">
+        {videos.map((v) => (
+          <figure class="m-0">
+            <div
+              class="relative aspect-video rounded overflow-hidden bg-graphite-2"
+              data-video-embed={v.embed}
+              data-video-title={v.title}
+            >
+              {v.poster && (
+                <img
+                  src={v.poster.src}
+                  alt=""
+                  width={v.poster.width}
+                  height={v.poster.height}
+                  loading="lazy"
+                  decoding="async"
+                  class="absolute inset-0 w-full h-full object-cover"
+                />
+              )}
+              <button
+                type="button"
+                data-video-play
+                class="absolute inset-0 grid place-items-center bg-ink/25 hover:bg-ink/10 transition-colors"
+                aria-label={`Смотреть: ${v.title}`}
+              >
+                <span
+                  class="grid place-items-center w-16 h-16 rounded-full bg-paper/95 text-ink text-xl leading-none pl-1"
+                  aria-hidden="true"
+                >▶</span>
+              </button>
+            </div>
+            <figcaption class="mt-4 font-ui text-sm text-paper-dim">{v.title}</figcaption>
+          </figure>
+        ))}
+      </div>
+    </div>
+  </section>
+)}
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-video-embed]').forEach((box) => {
+    box.querySelector('[data-video-play]')?.addEventListener('click', () => {
+      const frame = document.createElement('iframe');
+      frame.src = box.dataset.videoEmbed!;
+      frame.title = box.dataset.videoTitle ?? 'Видео';
+      frame.loading = 'lazy';
+      frame.allow = 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture';
+      frame.allowFullscreen = true;
+      frame.className = 'absolute inset-0 w-full h-full border-0';
+      box.replaceChildren(frame);
+    });
+  });
+</script>

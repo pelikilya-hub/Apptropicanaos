@@ -1,0 +1,108 @@
+---
+// Планировки по типам вилл. Вкладки без библиотеки: радиокнопки + CSS,
+// поэтому переключение работает и до загрузки JS.
+import { resolveAll } from './resolve.mjs';
+
+interface Sheet { src: string; alt: string; label?: string }
+interface PlanGroup { unit: string; label: string; note?: string; sheets: Sheet[] }
+interface Props { slug: string; groups: PlanGroup[]; title?: string; eyebrow?: string }
+const { slug, groups = [], title, eyebrow } = Astro.props;
+
+const resolved = groups
+  .map((g) => ({ ...g, sheets: resolveAll(g.sheets, slug).filter((s) => !s.missing) }))
+  .filter((g) => g.sheets.length > 0);
+---
+{resolved.length > 0 && (
+  <section id="plans" class="bg-paper-dim py-16 md:py-24">
+    <div class="container-page">
+      {eyebrow && (
+        <p class="font-ui text-xs uppercase tracking-[0.18em] text-muted mb-3">{eyebrow}</p>
+      )}
+      {title && (
+        <h2 class="font-display text-[1.75rem] md:text-[2.5rem] max-w-measure mb-8">{title}</h2>
+      )}
+
+      <div class="plans">
+        <fieldset class="border-0 p-0 m-0 mb-8">
+          <legend class="sr-only">Тип виллы</legend>
+          <div class="flex flex-wrap gap-2">
+            {resolved.map((g, i) => (
+              // Input лежит ВНУТРИ label, а состояние читается через :has().
+              // С peer-checked и несколькими соседями подсвечивались бы все
+              // следующие label: общий сиблинг-селектор не различает, чей он.
+              <label
+                class="cursor-pointer min-h-[44px] inline-flex items-center px-5 rounded border border-line
+                       font-ui text-sm transition-colors hover:border-graphite-3
+                       has-[:checked]:bg-teal has-[:checked]:text-paper has-[:checked]:border-teal
+                       has-[:focus-visible]:outline has-[:focus-visible]:outline-2
+                       has-[:focus-visible]:outline-offset-2"
+              >
+                <input
+                  type="radio"
+                  name="plans"
+                  id={`plan-${g.unit}`}
+                  class="sr-only"
+                  checked={i === 0}
+                  data-plan-input={g.unit}
+                />
+                {g.label}
+              </label>
+            ))}
+          </div>
+        </fieldset>
+
+        {resolved.map((g, i) => (
+          // Первая панель открыта инлайновым стилем: он бьёт .plan-panel{display:none},
+          // поэтому до загрузки JS страница показывает планировки, а не пустоту.
+          <div class="plan-panel" data-plan-panel={g.unit} style={i === 0 ? 'display:block' : undefined}>
+            {g.note && <p class="font-ui text-sm text-muted max-w-measure mb-6">{g.note}</p>}
+            <div class="grid gap-6 md:grid-cols-2">
+              {g.sheets.map((s) => (
+                <figure class="m-0 bg-paper border border-line rounded p-4">
+                  <img
+                    src={s.src}
+                    alt={s.alt}
+                    width={s.width}
+                    height={s.height}
+                    loading="lazy"
+                    decoding="async"
+                    class="w-full h-auto"
+                  />
+                  {s.label && (
+                    <figcaption class="mt-3 font-ui text-sm text-muted">{s.label}</figcaption>
+                  )}
+                </figure>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+)}
+
+<style>
+  /* Скрыты все панели, кроме первой: ей проставлен инлайновый display в разметке.
+     Дальше переключением занимается скрипт. */
+  .plan-panel { display: none; }
+</style>
+
+<script>
+  // Прогрессивное улучшение: до JS видна первая панель, после — переключение
+  // по радиокнопкам.
+  const root = document.querySelector<HTMLElement>('.plans');
+  if (root) {
+    const inputs = [...root.querySelectorAll<HTMLInputElement>('[data-plan-input]')];
+    const panels = [...root.querySelectorAll<HTMLElement>('[data-plan-panel]')];
+
+    const sync = () => {
+      const active = inputs.find((i) => i.checked)?.dataset.planInput;
+      panels.forEach((p) => {
+        p.style.display = p.dataset.planPanel === active ? 'block' : 'none';
+      });
+    };
+
+    inputs.forEach((i) => i.addEventListener('change', sync));
+    sync();
+  }
+</script>

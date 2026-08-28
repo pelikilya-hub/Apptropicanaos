@@ -12,6 +12,7 @@ import addFormats from 'ajv-formats';
 
 import { ROOT, listLandings, landingDir, readConfig, activeSlug, MISSING } from '../packages/config/load.mjs';
 import { loadPreset } from '../packages/quiz/load-preset.mjs';
+import { exists as mediaExists } from '../packages/media/resolve.mjs';
 import { findForbidden, collectStrings } from './forbidden.mjs';
 
 const args = process.argv.slice(2);
@@ -192,6 +193,46 @@ for (const n of neighbors) {
 // ---------- 7. Запрещённые утверждения ----------
 for (const hit of findForbidden(config, config.forbiddenClaims ?? [])) {
   fail(`запрет [${hit.id}] в ${hit.path}: «${hit.match}» — ${hit.why}`);
+}
+
+// ---------- 7a. Медиа ----------
+// Битый путь к рендеру виден только на живом домене, где его уже видит клиент.
+// Поэтому существование каждого файла проверяется на сборке.
+const media = config.media ?? {};
+const allImages = [
+  ...(media.gallery ?? []).map((i) => ({ ...i, where: 'gallery' })),
+  ...(media.plans ?? []).flatMap((g) =>
+    (g.sheets ?? []).map((sh) => ({ ...sh, where: `plans[${g.unit}]` }))
+  ),
+  ...(media.video ?? [])
+    .filter((v) => v.poster)
+    .map((v) => ({ src: v.poster, alt: v.title, where: 'video.poster' })),
+];
+
+for (const img of allImages) {
+  if (!mediaExists(img.src, slug)) {
+    fail(`медиа: файл ${img.src} (${img.where}) не найден в landings/${slug}/public`);
+  }
+}
+
+// Один и тот же кадр в галерее дважды — почти всегда ошибка копипаста.
+const srcSeen = new Set();
+for (const img of media.gallery ?? []) {
+  if (srcSeen.has(img.src)) warn(`медиа: ${img.src} повторяется в галерее`);
+  srcSeen.add(img.src);
+}
+
+for (const v of media.video ?? []) {
+  if (/drive\.google\.com|dropbox\.com/i.test(v.id)) {
+    fail(`медиа: видео «${v.title}» ссылается на файлообменник. Нужен id ролика на YouTube или Vimeo.`);
+  }
+}
+
+if (config.type === 'project' && (media.gallery ?? []).length === 0) {
+  warn('медиа: у проекта нет галереи — страница продукта без единого кадра');
+}
+if (config.type === 'project' && (media.plans ?? []).length === 0) {
+  warn('медиа: у проекта нет планировок');
 }
 
 // ---------- 8. Квиз ----------

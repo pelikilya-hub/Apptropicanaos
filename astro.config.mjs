@@ -24,6 +24,7 @@ export default defineConfig({
         '@ui': alias('./packages/ui'),
         '@fonar': alias('./packages/fonar'),
         '@insight': alias('./packages/insight'),
+        '@media': alias('./packages/media'),
         '@quiz': alias('./packages/quiz'),
         '@explain': alias('./packages/explain'),
         '@seo': alias('./packages/seo'),

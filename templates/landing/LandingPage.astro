@@ -10,6 +10,9 @@ import Button from '@ui/Button.astro';
 import StickyCta from '@ui/StickyCta.astro';
 import Fonar from '@fonar/Fonar.astro';
 import Insight from '@insight/Insight.astro';
+import Gallery from '@media/Gallery.astro';
+import Plans from '@media/Plans.astro';
+import Video from '@media/Video.astro';
 import Quiz from '@quiz/Quiz.astro';
 import Explain from '@explain/Explain.astro';
 
@@ -27,6 +30,7 @@ const {
   explanations = [],
   faq = [],
   units = [],
+  media = {},
   neighbors = [],
   anchors = [],
   geo = {},
@@ -85,6 +89,13 @@ const finalBody =
 
   <!-- 4. Стоит понять до просмотра: честный разбор, обязателен -->
   <Insight insight={insight} />
+
+  <Gallery
+    slug={slug}
+    items={media.gallery ?? []}
+    eyebrow="Как это выглядит"
+    title={media.galleryTitle ?? 'Проект в кадрах'}
+  />
 
   <!-- 5. Кому страница / антикому -->
   {(has(audienceFit?.forWhom) || has(audienceFit?.notForWhom)) && (
@@ -203,8 +214,22 @@ const finalBody =
     </Section>
   )}
 
+  <Plans
+    slug={slug}
+    groups={media.plans ?? []}
+    eyebrow="Планировки"
+    title={media.plansTitle ?? 'Что внутри каждого типа'}
+  />
+
   <!-- 6 + 7. Квиз и маршрут -->
   <Quiz slug={slug} preset={preset} analyticsProvider={provider} cta={cta} />
+
+  <Video
+    slug={slug}
+    items={media.video ?? []}
+    eyebrow="Видео"
+    title={media.videoTitle ?? 'Обход по вилле'}
+  />
 
   <!-- Жизнь после ключей: только если в конфиге есть сервисный оффер -->
   {has(afterKeys?.items) && (
