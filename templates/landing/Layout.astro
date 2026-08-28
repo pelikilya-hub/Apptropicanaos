@@ -4,6 +4,19 @@ import Seo from '@seo/Seo.astro';
 
 interface Props { landing: any }
 const { landing } = Astro.props;
+
+// Пер-доменный акцент. Переопределяются только три токена цвета:
+// сетка, типографика и структура остаются общими для всех площадок.
+const theme = landing.theme ?? {};
+const themeVars = [
+  theme.accent && `--c-teal:${theme.accent}`,
+  theme.accentBright && `--c-teal-bright:${theme.accentBright}`,
+  theme.gold && `--c-gold:${theme.gold}`,
+  // Свечение по кромке Фонаря и разбора берётся от золота ветки.
+  theme.gold && `--c-gold-soft:${theme.gold}47`,
+]
+  .filter(Boolean)
+  .join(';');
 ---
 <!doctype html>
 <html lang={landing.language || 'ru'}>
@@ -12,6 +25,10 @@ const { landing } = Astro.props;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
     <Seo landing={landing} />
+    {/* :root:root — Astro кладёт этот стиль ДО бандла Tailwind,
+        а токены каркаса объявлены на одинарном :root и выиграли бы по порядку.
+        Удвоенный селектор поднимает специфичность и снимает зависимость от порядка. */}
+    {themeVars && <style set:html={`:root:root{${themeVars}}`} />}
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
