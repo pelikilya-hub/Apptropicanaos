@@ -14,10 +14,39 @@ const { slug, image } = Astro.props;
 
 const hero = image ? resolveImage(image, slug) : null;
 const shown = hero && !hero.missing ? hero : null;
+
+// Раскладка подстраивается под кадр, а не кадр под раскладку.
+// Горизонтальный сюжет — генплан, панорама — в вертикальном слоте пришлось бы
+// обрезать до неузнаваемости, поэтому он идёт во всю ширину под текстом.
+const landscape = shown?.width && shown?.height ? shown.width > shown.height : false;
 ---
 <section class="bg-paper pt-16 pb-16 md:pt-24 md:pb-24">
   <div class="container-page">
-    {shown ? (
+    {!shown && <slot />}
+
+    {shown && landscape && (
+      <>
+        <slot />
+        <figure class="m-0 mt-14">
+          <img
+            src={shown.src}
+            alt={shown.alt}
+            width={shown.width}
+            height={shown.height}
+            fetchpriority="high"
+            decoding="async"
+            class="w-full h-auto rounded bg-paper-dim"
+          />
+          {shown.caption && (
+            <figcaption class="mt-3 font-ui text-sm text-muted max-w-measure">
+              {shown.caption}
+            </figcaption>
+          )}
+        </figure>
+      </>
+    )}
+
+    {shown && !landscape && (
       <div class="grid gap-12 lg:grid-cols-[1.05fr_1fr] lg:items-center lg:gap-16">
         <div><slot /></div>
         <figure class="m-0 lg:order-last">
@@ -28,15 +57,13 @@ const shown = hero && !hero.missing ? hero : null;
             height={shown.height}
             fetchpriority="high"
             decoding="async"
-            class="w-full h-auto rounded object-cover aspect-[4/3] lg:aspect-[3/4] bg-paper-dim"
+            class="w-full h-auto rounded object-cover aspect-[3/4] bg-paper-dim"
           />
           {shown.caption && (
             <figcaption class="mt-3 font-ui text-sm text-muted">{shown.caption}</figcaption>
           )}
         </figure>
       </div>
-    ) : (
-      <slot />
     )}
   </div>
 </section>

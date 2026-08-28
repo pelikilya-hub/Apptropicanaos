@@ -43,6 +43,7 @@ npm run validate:landing                             # гейт перед сб�
 npm run validate:landing -- --prod                   # требования боевого домена
 npm run build                                        # валидация + astro build
 npm run build:landing -- --slug <slug> [--prod]      # сборка одной ветки с отчётом
+npm run optimize:media -- --slug <slug>              # сжать исходники из кита
 npm run import:media -- --slug <slug> [--write]      # media из файлов в public/
 npm run audit:uniqueness                             # пересечения между доменами
 npm run dev                                          # локальный просмотр
@@ -57,7 +58,7 @@ npm run dev                                          # локальный про
 packages/ui        токены, сетка, кнопки, шапка/подвал, липкий CTA
 packages/fonar     Фонарь — офферный блок: цена, условия, срок, остаток
 packages/insight   «Стоит понять до просмотра» — честный разбор
-packages/media     галерея, планировки, фасад видео
+packages/media     первый экран, галерея, планировки, фасад видео
 packages/quiz      движок квиза, пресеты, маршруты
 packages/explain   аккордеон разъяснений
 packages/seo       мета, canonical, og, schema
