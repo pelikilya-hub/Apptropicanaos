@@ -1,0 +1,42 @@
+---
+// Первый экран. Кадр необязателен: без него секция схлопывается
+// в прежнюю текстовую вёрстку, с ним — текст слева, кадр справа.
+//
+// Текст поверх рендера не кладём: читаемость заголовка на чужой картинке
+// не гарантирует никто, а H1 обязан читаться на любом кадре.
+import { resolveImage } from './resolve.mjs';
+
+interface Props {
+  slug: string;
+  image?: { src: string; alt: string; caption?: string };
+}
+const { slug, image } = Astro.props;
+
+const hero = image ? resolveImage(image, slug) : null;
+const shown = hero && !hero.missing ? hero : null;
+---
+<section class="bg-paper pt-16 pb-16 md:pt-24 md:pb-24">
+  <div class="container-page">
+    {shown ? (
+      <div class="grid gap-12 lg:grid-cols-[1.05fr_1fr] lg:items-center lg:gap-16">
+        <div><slot /></div>
+        <figure class="m-0 lg:order-last">
+          <img
+            src={shown.src}
+            alt={shown.alt}
+            width={shown.width}
+            height={shown.height}
+            fetchpriority="high"
+            decoding="async"
+            class="w-full h-auto rounded object-cover aspect-[4/3] lg:aspect-[3/4] bg-paper-dim"
+          />
+          {shown.caption && (
+            <figcaption class="mt-3 font-ui text-sm text-muted">{shown.caption}</figcaption>
+          )}
+        </figure>
+      </div>
+    ) : (
+      <slot />
+    )}
+  </div>
+</section>

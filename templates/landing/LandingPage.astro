@@ -10,6 +10,7 @@ import Button from '@ui/Button.astro';
 import StickyCta from '@ui/StickyCta.astro';
 import Fonar from '@fonar/Fonar.astro';
 import Insight from '@insight/Insight.astro';
+import Hero from '@media/Hero.astro';
 import Gallery from '@media/Gallery.astro';
 import Plans from '@media/Plans.astro';
 import Video from '@media/Video.astro';
@@ -57,32 +58,30 @@ const finalBody =
   <Header brand={brand} hasOffer={Boolean(fonar && has(fonar.headline))} />
 
   <!-- 2. Hero -->
-  <section class="bg-paper pt-16 pb-16 md:pt-24 md:pb-24">
-    <div class="container-page">
-      {has(hero?.eyebrow) && (
-        <p class="font-ui text-xs uppercase tracking-[0.18em] text-muted mb-5">{hero.eyebrow}</p>
-      )}
+  <Hero slug={slug} image={media.hero}>
+    {has(hero?.eyebrow) && (
+      <p class="font-ui text-xs uppercase tracking-[0.18em] text-muted mb-5">{hero.eyebrow}</p>
+    )}
 
-      <h1 class="font-display text-[2rem] leading-[1.12] md:text-[3.25rem] max-w-[20ch]">
-        {fact(seo?.h1)}
-      </h1>
+    <h1 class="font-display text-[2rem] leading-[1.12] md:text-[3.25rem] max-w-[20ch]">
+      {fact(seo?.h1)}
+    </h1>
 
-      <p class="mt-6 font-ui text-[1.05rem] leading-relaxed text-muted max-w-measure">
-        {fact(hero?.lead)}
-      </p>
+    <p class="mt-6 font-ui text-[1.05rem] leading-relaxed text-muted max-w-measure">
+      {fact(hero?.lead)}
+    </p>
 
-      <div class="mt-10 flex flex-wrap items-center gap-5">
-        <Button href="#quiz" event="cta_click" eventLabel="hero_primary">
-          {primaryCtaLabel}
+    <div class="mt-10 flex flex-wrap items-center gap-5">
+      <Button href="#quiz" event="cta_click" eventLabel="hero_primary">
+        {primaryCtaLabel}
+      </Button>
+      {has(hero?.secondaryCta) && (
+        <Button href="#insight" variant="ghost" event="cta_click" eventLabel="hero_secondary">
+          {hero.secondaryCta}
         </Button>
-        {has(hero?.secondaryCta) && (
-          <Button href="#insight" variant="ghost" event="cta_click" eventLabel="hero_secondary">
-            {hero.secondaryCta}
-          </Button>
-        )}
-      </div>
+      )}
     </div>
-  </section>
+  </Hero>
 
   <!-- 3. Фонарь: офферный блок. Схлопывается, если оффера у домена нет. -->
   {fonar && has(fonar.headline) && <Fonar fonar={fonar} />}

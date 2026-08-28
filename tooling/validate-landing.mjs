@@ -200,6 +200,8 @@ for (const hit of findForbidden(config, config.forbiddenClaims ?? [])) {
 // Поэтому существование каждого файла проверяется на сборке.
 const media = config.media ?? {};
 const allImages = [
+  ...(media.hero ? [{ ...media.hero, where: 'hero' }] : []),
+  ...(media.og ? [{ ...media.og, where: 'og' }] : []),
   ...(media.gallery ?? []).map((i) => ({ ...i, where: 'gallery' })),
   ...(media.plans ?? []).flatMap((g) =>
     (g.sheets ?? []).map((sh) => ({ ...sh, where: `plans[${g.unit}]` }))
@@ -233,6 +235,17 @@ if (config.type === 'project' && (media.gallery ?? []).length === 0) {
 }
 if (config.type === 'project' && (media.plans ?? []).length === 0) {
   warn('медиа: у проекта нет планировок');
+}
+if (!media.hero) {
+  warn('медиа: нет кадра первого экрана (media.hero) — hero остаётся текстовым');
+}
+if (!media.og) {
+  warn('медиа: нет media.og — в мессенджерах ссылка уйдёт без картинки');
+}
+
+// Один и тот же кадр в hero и первым в галерее — человек видит его дважды подряд.
+if (media.hero && media.gallery?.[0]?.src === media.hero.src) {
+  warn('медиа: кадр hero повторяется первым в галерее');
 }
 
 // ---------- 8. Квиз ----------

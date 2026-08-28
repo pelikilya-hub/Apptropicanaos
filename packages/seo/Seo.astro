@@ -11,7 +11,10 @@ const { seo = {}, origin = '', language = 'ru', brand = {}, geo = {}, faq = [] }
 const title = seo.title?.trim() || '[ДАННЫЕ]';
 const description = seo.description?.trim() || '[ДАННЫЕ]';
 const canonical = origin ? `${origin}/` : undefined;
-const ogImage = origin ? `${origin}/og.jpg` : undefined;
+// og-картинка своя у каждого домена: одна и та же на нескольких площадках —
+// признак дверных страниц. Путь берётся из media.og, /og.jpg остаётся запасным.
+const ogPath = landing.media?.og?.src || '/og.jpg';
+const ogImage = origin ? `${origin}${ogPath}` : undefined;
 
 const hreflang: Array<{ lang: string; url: string }> = landing.hreflang || [];
 

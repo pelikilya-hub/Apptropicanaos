@@ -449,6 +449,40 @@
       "description": "Рендеры, планировки и видео ветки. Файлы лежат в landings/<slug>/public.",
       "type": "object",
       "properties": {
+        "hero": {
+          "type": "object",
+          "required": [
+            "src",
+            "alt"
+          ],
+          "properties": {
+            "src": {
+              "type": "string",
+              "pattern": "^/"
+            },
+            "alt": {
+              "type": "string",
+              "minLength": 1
+            },
+            "caption": {
+              "type": "string"
+            }
+          },
+          "description": "Кадр первого экрана. Стоит рядом с H1: на десктопе справа от текста, на мобиле под ним. Без него первый экран остаётся текстовым."
+        },
+        "og": {
+          "description": "Картинка для соцсетей и мессенджеров, 1200×630. Своя у каждого домена: одна og на нескольких площадках — признак дверных страниц.",
+          "type": "object",
+          "required": [
+            "src"
+          ],
+          "properties": {
+            "src": {
+              "type": "string",
+              "pattern": "^/"
+            }
+          }
+        },
         "galleryTitle": {
           "type": "string"
         },
