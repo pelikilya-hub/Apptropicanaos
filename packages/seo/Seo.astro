@@ -1,0 +1,71 @@
+---
+// Мета одного домена. canonical, og, hreflang и schema смотрят
+// ТОЛЬКО на свой origin. Склейка контента между доменами запрещена.
+interface Props {
+  landing: any;
+}
+const { landing } = Astro.props;
+
+const { seo = {}, origin = '', language = 'ru', brand = {}, geo = {}, faq = [] } = landing;
+
+const title = seo.title?.trim() || '[ДАННЫЕ]';
+const description = seo.description?.trim() || '[ДАННЫЕ]';
+const canonical = origin ? `${origin}/` : undefined;
+const ogImage = origin ? `${origin}/og.jpg` : undefined;
+
+const hreflang: Array<{ lang: string; url: string }> = landing.hreflang || [];
+
+// FAQPage разметка только если вопросы реально заполнены.
+const faqEntries = (faq || []).filter((f: any) => f?.q && f?.a);
+const jsonLd: Record<string, unknown>[] = [];
+
+if (canonical) {
+  jsonLd.push({
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: title,
+    description,
+    url: canonical,
+    inLanguage: language,
+    ...(geo?.district
+      ? { about: { '@type': 'Place', name: `${geo.district}, ${geo.island || 'Phuket'}` } }
+      : {}),
+  });
+}
+
+if (faqEntries.length > 0) {
+  jsonLd.push({
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqEntries.map((f: any) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a },
+    })),
+  });
+}
+---
+<title>{title}</title>
+<meta name="description" content={description} />
+{canonical && <link rel="canonical" href={canonical} />}
+
+{hreflang.map((h) => <link rel="alternate" hreflang={h.lang} href={h.url} />)}
+
+<meta property="og:type" content="website" />
+<meta property="og:locale" content={language === 'ru' ? 'ru_RU' : language} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+{canonical && <meta property="og:url" content={canonical} />}
+{ogImage && <meta property="og:image" content={ogImage} />}
+{brand?.name && <meta property="og:site_name" content={brand.name} />}
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+{ogImage && <meta name="twitter:image" content={ogImage} />}
+
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+{jsonLd.map((node) => (
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(node)} />
+))}

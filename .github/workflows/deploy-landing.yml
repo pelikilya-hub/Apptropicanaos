@@ -1,0 +1,79 @@
+name: Деплой лендинга
+
+# Одна ветка = один домен. Имя ветки задаёт проект Cloudflare Pages,
+# боевой домен берётся только из landings/<slug>/config.json.
+on:
+  push:
+    branches: ['landings/**']
+  pull_request:
+    branches: [main]
+    paths: ['landings/**']
+
+permissions:
+  contents: read
+  deployments: write
+  pull-requests: write
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Сборка и деплой
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - name: Определить slug из имени ветки
+        id: slug
+        run: |
+          ref="${{ github.head_ref || github.ref_name }}"
+          slug="${ref#landings/}"
+          if [ "$slug" = "$ref" ]; then
+            echo "::error::Ветка «$ref» не выглядит как landings/<slug>"
+            exit 1
+          fi
+          if [ ! -d "landings/$slug" ]; then
+            echo "::error::Нет каталога landings/$slug"
+            exit 1
+          fi
+          echo "slug=$slug" >> "$GITHUB_OUTPUT"
+
+      # На PR — превью: domain может быть ещё пустым, robots закроет индексацию.
+      # На push в ветку лендинга — прод: пустой domain или [ДАННЫЕ] блокируют деплой.
+      - name: Валидация
+        env:
+          LANDING_SLUG: ${{ steps.slug.outputs.slug }}
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            npm run validate:landing -- --slug "$LANDING_SLUG"
+          else
+            npm run validate:landing -- --slug "$LANDING_SLUG" --prod
+          fi
+
+      - name: Пересечения между доменами
+        run: npm run audit:uniqueness
+
+      - name: Сборка
+        env:
+          LANDING_SLUG: ${{ steps.slug.outputs.slug }}
+          LANDING_ENV: ${{ github.event_name == 'pull_request' && 'preview' || 'production' }}
+        run: npx astro build
+
+      - name: Деплой на Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: >-
+            pages deploy dist
+            --project-name=${{ steps.slug.outputs.slug }}
+            --branch=${{ github.head_ref || github.ref_name }}

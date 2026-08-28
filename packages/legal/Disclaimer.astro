@@ -1,0 +1,20 @@
+---
+// Юридический каркас формулировок общий, текст можно переопределить в ветке.
+// Дисклеймер выводится в подвале ровно один раз.
+interface Props {
+  legal: { disclaimer?: string; notOffer?: boolean };
+}
+const { legal } = Astro.props;
+
+const DEFAULT_TEXT =
+  'Страница носит информационный характер, не является публичной офертой ' +
+  'и не заменяет персональную юридическую или налоговую консультацию. ' +
+  'Условия, цены и наличие уточняются на момент обращения. ' +
+  'Перед резервом и депозитом проверяйте документы с независимым юристом.';
+
+const text =
+  !legal?.disclaimer || legal.disclaimer === 'default' ? DEFAULT_TEXT : legal.disclaimer;
+---
+<div class="border-t border-graphite-3 pt-8">
+  <p class="font-ui text-xs leading-relaxed text-muted max-w-measure">{text}</p>
+</div>

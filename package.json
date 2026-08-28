@@ -1,0 +1,31 @@
+{
+  "name": "landing-factory",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Фабрика органических лендингов недвижимости Пхукета: один репозиторий -> ветка на лендинг -> свой домен",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "node tooling/validate-landing.mjs && astro build",
+    "preview": "astro preview",
+    "new:landing": "node tooling/create-landing.mjs",
+    "validate:landing": "node tooling/validate-landing.mjs",
+    "build:landing": "node tooling/build-landing.mjs",
+    "check": "astro check",
+    "audit:uniqueness": "node tooling/check-uniqueness.mjs"
+  },
+  "dependencies": {
+    "@astrojs/tailwind": "^5.1.5",
+    "astro": "^4.16.18",
+    "tailwindcss": "^3.4.17"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "typescript": "^5.7.3"
+  }
+}

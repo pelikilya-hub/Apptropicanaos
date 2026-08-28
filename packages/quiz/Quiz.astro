@@ -1,0 +1,261 @@
+---
+// Квиз + маршрут. Один вопрос на экран, назад без потери, финиш анонимный.
+// Контакт появляется только внутри маршрута, не раньше.
+import type { QuizPreset } from './types';
+
+interface Props {
+  slug: string;
+  preset: QuizPreset;
+  analyticsProvider?: string;
+  cta: { primaryChannel?: string; primaryValue?: string; afterQuiz?: boolean };
+}
+const { slug, preset, analyticsProvider = 'none', cta } = Astro.props;
+
+const total = preset.steps.length;
+const routeIds = Object.keys(preset.routes);
+
+// Канал контакта берётся из конфига. Телефон не обязателен, если есть мессенджер.
+const contactHref = (() => {
+  const v = (cta?.primaryValue || '').trim();
+  if (!v) return '';
+  if (/^https?:\/\//.test(v)) return v;
+  if (cta?.primaryChannel === 'telegram') return `https://t.me/${v.replace(/^@/, '')}`;
+  if (cta?.primaryChannel === 'whatsapp') return `https://wa.me/${v.replace(/[^\d]/g, '')}`;
+  if (cta?.primaryChannel === 'email') return `mailto:${v}`;
+  return v;
+})();
+---
+<section id="quiz" class="bg-paper-dim py-16 md:py-24">
+  <div class="container-page">
+    <p class="font-ui text-xs uppercase tracking-[0.18em] text-muted mb-3">Разбор сценария</p>
+    <h2 class="font-display text-[1.75rem] md:text-[2.5rem] max-w-measure mb-3">
+      {total} вопросов — и вы увидите свой маршрут
+    </h2>
+    <p class="font-ui text-sm text-muted max-w-measure mb-10">
+      Ответы сохраняются в браузере. Назад можно вернуться без потери.
+      Контакт не обязателен: маршрут вы увидите в любом случае.
+    </p>
+
+    <div
+      id="quiz-app"
+      data-slug={slug}
+      data-provider={analyticsProvider}
+      data-total={total}
+      class="max-w-2xl"
+    >
+      <!-- прогресс -->
+      <div class="mb-8" data-quiz-progress>
+        <div class="h-px w-full bg-line">
+          <div class="h-px bg-teal transition-all duration-300" data-quiz-bar style="width:0%"></div>
+        </div>
+        <p class="mt-3 font-ui text-xs text-muted">
+          Шаг <span data-quiz-current>1</span> из {total}
+        </p>
+      </div>
+
+      <!-- шаги -->
+      {preset.steps.map((step, i) => (
+        <fieldset data-quiz-step={String(i)} hidden={i !== 0} class="border-0 p-0 m-0">
+          <legend class="font-display text-[1.35rem] md:text-[1.7rem] mb-2 p-0">
+            {step.question}
+          </legend>
+          {step.note && <p class="font-ui text-sm text-muted mb-6 max-w-measure">{step.note}</p>}
+
+          <div class="grid gap-3 mt-6">
+            {step.options.map((opt) => (
+              <label
+                class="flex items-start gap-3 min-h-[48px] px-4 py-3 bg-paper border border-line rounded cursor-pointer hover:border-graphite-3 transition-colors has-[:checked]:border-teal has-[:checked]:bg-paper"
+              >
+                <input
+                  type="radio"
+                  name={step.id}
+                  value={opt.id}
+                  class="mt-1 accent-[var(--c-teal)]"
+                  data-quiz-input
+                />
+                <span class="font-ui text-[0.98rem]">
+                  {opt.label}
+                  {opt.hint && <span class="block text-sm text-muted">{opt.hint}</span>}
+                </span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+      ))}
+
+      <div class="flex items-center gap-4 mt-8" data-quiz-nav>
+        <button
+          type="button"
+          data-quiz-back
+          hidden
+          class="min-h-[48px] px-5 rounded border border-line font-ui text-sm hover:border-graphite-3 transition-colors"
+        >
+          Назад
+        </button>
+        <button
+          type="button"
+          data-quiz-restart
+          hidden
+          class="font-ui text-sm text-muted underline underline-offset-4"
+        >
+          Начать заново
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Маршрут после квиза -->
+<section id="route" class="bg-paper py-16 md:py-24" data-route-section hidden>
+  <div class="container-page max-w-2xl">
+    <p class="font-ui text-xs uppercase tracking-[0.18em] text-muted mb-3">Ваш маршрут</p>
+
+    {routeIds.map((id) => {
+      const r = (preset.routes as any)[id];
+      return (
+        <article data-route={id} hidden>
+          <h2 class="font-display text-[1.75rem] md:text-[2.4rem] mb-5">{r.title}</h2>
+          <p class="font-ui text-[1.02rem] leading-relaxed text-muted max-w-measure">{r.body}</p>
+
+          {r.outboundHref && (
+            <p class="mt-6">
+              <a
+                href={r.outboundHref}
+                rel="noopener"
+                data-event="cta_click"
+                data-event-label={`route_${id}_outbound`}
+                class="font-ui text-[0.98rem] underline underline-offset-4 decoration-line hover:decoration-graphite-3"
+              >
+                {r.outboundLabel || r.outboundHref}
+              </a>
+            </p>
+          )}
+
+          {contactHref && (
+            <a
+              href={r.ctaHref || contactHref}
+              rel="noopener"
+              data-event="cta_click"
+              data-event-label={`route_${id}`}
+              class="mt-8 inline-flex items-center justify-center min-h-[48px] px-6 rounded bg-teal text-paper font-ui text-[0.95rem] no-underline hover:bg-teal-bright transition-colors"
+            >
+              {r.ctaLabel || 'Обсудить сценарий'}
+            </a>
+          )}
+
+          <p class="mt-4 font-ui text-xs text-muted">
+            Можно ничего не оставлять: маршрут уже перед вами.
+          </p>
+        </article>
+      );
+    })}
+  </div>
+</section>
+
+<script is:inline type="application/json" id="quiz-preset" set:html={JSON.stringify(preset)}></script>
+
+<script>
+  import { loadState, saveState, clearState, resolveRoute, answeredCount, type QuizState } from './engine';
+  import { initAnalytics, track } from '@analytics/client';
+  import type { QuizPreset } from './types';
+
+  const root = document.getElementById('quiz-app');
+  const presetEl = document.getElementById('quiz-preset');
+  if (root && presetEl) {
+    const preset: QuizPreset = JSON.parse(presetEl.textContent || '{}');
+    const slug = root.dataset.slug!;
+    const total = Number(root.dataset.total);
+
+    initAnalytics(root.dataset.provider || 'none');
+
+    const steps = [...root.querySelectorAll<HTMLElement>('[data-quiz-step]')];
+    const bar = root.querySelector<HTMLElement>('[data-quiz-bar]')!;
+    const current = root.querySelector<HTMLElement>('[data-quiz-current]')!;
+    const backBtn = root.querySelector<HTMLButtonElement>('[data-quiz-back]')!;
+    const restartBtn = root.querySelector<HTMLButtonElement>('[data-quiz-restart]')!;
+    const routeSection = document.querySelector<HTMLElement>('[data-route-section]')!;
+
+    let state: QuizState = loadState(slug);
+    let started = answeredCount(preset, state.answers) > 0;
+
+    function render(scroll = false) {
+      const idx = Math.min(state.step, total - 1);
+
+      steps.forEach((el, i) => {
+        el.hidden = i !== idx || state.done;
+      });
+
+      // Восстанавливаем выбранные ответы — назад без потери.
+      for (const [stepId, value] of Object.entries(state.answers)) {
+        const input = root!.querySelector<HTMLInputElement>(
+          `input[name="${stepId}"][value="${value}"]`
+        );
+        if (input) input.checked = true;
+      }
+
+      const answered = answeredCount(preset, state.answers);
+      bar.style.width = `${Math.round((answered / total) * 100)}%`;
+      current.textContent = String(state.done ? total : idx + 1);
+      backBtn.hidden = state.done || idx === 0;
+      restartBtn.hidden = !state.done;
+
+      root!.querySelector<HTMLElement>('[data-quiz-progress]')!.hidden = state.done;
+
+      if (state.done) {
+        const routeId = resolveRoute(preset, state.answers);
+        routeSection.hidden = false;
+        routeSection
+          .querySelectorAll<HTMLElement>('[data-route]')
+          .forEach((el) => (el.hidden = el.dataset.route !== routeId));
+        if (scroll) routeSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        routeSection.hidden = true;
+      }
+    }
+
+    root.addEventListener('change', (e) => {
+      const input = e.target as HTMLInputElement;
+      if (!input.matches('[data-quiz-input]')) return;
+
+      if (!started) {
+        started = true;
+        track('quiz_start', { slug });
+      }
+
+      state.answers[input.name] = input.value;
+      track('quiz_step', { slug, step: input.name, answer: input.value });
+
+      const next = state.step + 1;
+      if (next >= total) {
+        state.done = true;
+        const routeId = resolveRoute(preset, state.answers);
+        track('quiz_complete', { slug });
+        track(`quiz_route_${routeId}`, { slug });
+      } else {
+        state.step = next;
+      }
+
+      saveState(slug, state);
+      render(true);
+    });
+
+    backBtn.addEventListener('click', () => {
+      state.step = Math.max(0, state.step - 1);
+      saveState(slug, state);
+      render();
+    });
+
+    restartBtn.addEventListener('click', () => {
+      clearState(slug);
+      state = { step: 0, answers: {}, done: false };
+      started = false;
+      root!
+        .querySelectorAll<HTMLInputElement>('[data-quiz-input]')
+        .forEach((i) => (i.checked = false));
+      render();
+      document.getElementById('quiz')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    render();
+  }
+</script>

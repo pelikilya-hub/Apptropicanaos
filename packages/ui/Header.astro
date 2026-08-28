@@ -1,0 +1,21 @@
+---
+// Каркас не знает имени компании. Бренд приходит из config.brand.
+interface Props {
+  brand: { name?: string; homeLabel?: string; logoAlt?: string };
+}
+const { brand } = Astro.props;
+const name = brand?.name?.trim() || '[ДАННЫЕ]';
+---
+<header class="border-b border-line">
+  <div class="container-page flex items-center justify-between h-16">
+    <a href="/" class="font-display text-lg no-underline" aria-label={brand?.logoAlt || name}>
+      {name}
+    </a>
+    <nav class="hidden md:flex gap-6 font-ui text-sm text-muted">
+      <a href="#fonar" class="no-underline hover:text-graphite">Фонарь</a>
+      <a href="#quiz" class="no-underline hover:text-graphite">Разбор сценария</a>
+      <a href="#explain" class="no-underline hover:text-graphite">Разъяснения</a>
+      <a href="#faq" class="no-underline hover:text-graphite">FAQ</a>
+    </nav>
+  </div>
+</header>

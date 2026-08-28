@@ -1,0 +1,28 @@
+---
+interface Props {
+  href: string;
+  variant?: 'primary' | 'secondary' | 'ghost';
+  event?: string;
+  eventLabel?: string;
+  class?: string;
+}
+const { href, variant = 'primary', event, eventLabel, class: cls = '' } = Astro.props;
+
+const base =
+  'inline-flex items-center justify-center gap-2 min-h-[48px] px-6 rounded ' +
+  'font-ui text-[0.95rem] tracking-wide transition-colors duration-200 no-underline';
+
+const styles = {
+  primary: 'bg-teal text-paper hover:bg-teal-bright',
+  secondary: 'border border-line text-graphite hover:border-graphite-3',
+  ghost: 'text-graphite underline underline-offset-4 decoration-line hover:decoration-graphite-3 px-0 min-h-0',
+} as const;
+---
+<a
+  href={href}
+  class={`${base} ${styles[variant]} ${cls}`}
+  data-event={event}
+  data-event-label={eventLabel}
+>
+  <slot />
+</a>

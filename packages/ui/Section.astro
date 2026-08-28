@@ -1,0 +1,27 @@
+---
+interface Props {
+  id?: string;
+  tone?: 'paper' | 'dim' | 'dark';
+  eyebrow?: string;
+  title?: string;
+  class?: string;
+}
+const { id, tone = 'paper', eyebrow, title, class: cls = '' } = Astro.props;
+
+const tones = {
+  paper: 'bg-paper text-graphite',
+  dim: 'bg-paper-dim text-graphite',
+  dark: 'bg-ink text-paper',
+} as const;
+---
+<section id={id} class={`${tones[tone]} py-16 md:py-24 ${cls}`}>
+  <div class="container-page">
+    {eyebrow && (
+      <p class="font-ui text-xs uppercase tracking-[0.18em] text-muted mb-3">{eyebrow}</p>
+    )}
+    {title && (
+      <h2 class="font-display text-[1.75rem] md:text-[2.5rem] max-w-measure mb-8">{title}</h2>
+    )}
+    <slot />
+  </div>
+</section>

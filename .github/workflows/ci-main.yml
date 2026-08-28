@@ -1,0 +1,47 @@
+name: CI (каркас)
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Валидация и сборка каркаса
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - name: Типы Astro
+        run: npx astro check
+
+      - name: Валидация шаблонного лендинга
+        run: npm run validate:landing
+
+      - name: Пересечения между доменами
+        run: npm run audit:uniqueness
+
+      - name: Сборка
+        run: npx astro build
+
+      - name: dist/ открывается без бэкенда
+        run: test -f dist/index.html && test -f dist/robots.txt && test -f dist/sitemap.xml
+
+      - name: Секреты не в git
+        run: |
+          if git grep -nIE '(sk-[A-Za-z0-9]{20,}|G-[A-Z0-9]{10}|AIza[0-9A-Za-z_-]{35})' \
+               -- . ':!*.example' ':!package-lock.json'; then
+            echo "::error::В репозитории найдено похожее на ключ значение"
+            exit 1
+          fi

@@ -1,0 +1,20 @@
+---
+// На мобиле липкий CTA ровно один. Вторичное действие с ним не спорит.
+interface Props { label: string; href: string }
+const { label, href } = Astro.props;
+---
+<div
+  class="md:hidden fixed bottom-0 inset-x-0 z-40 bg-paper/95 backdrop-blur border-t border-line px-4 py-3"
+>
+  <a
+    href={href}
+    data-event="cta_click"
+    data-event-label="sticky"
+    class="flex items-center justify-center min-h-[48px] w-full rounded bg-teal text-paper font-ui text-[0.95rem] no-underline"
+  >
+    {label}
+  </a>
+</div>
+<script is:inline>
+  document.body.setAttribute('data-sticky-cta', 'true');
+</script>

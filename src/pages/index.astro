@@ -1,0 +1,10 @@
+---
+import { loadLanding, activeSlug } from '@config/load.mjs';
+import { loadPreset } from '@quiz/load-preset.mjs';
+import LandingPage from '@templates/landing/LandingPage.astro';
+
+const slug = activeSlug();
+const landing = loadLanding(slug);
+const preset = loadPreset(slug, landing.quizPreset);
+---
+<LandingPage landing={landing} preset={preset} />

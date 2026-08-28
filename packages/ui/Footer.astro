@@ -1,0 +1,40 @@
+---
+import Disclaimer from '@legal/Disclaimer.astro';
+interface Props {
+  brand: { name?: string };
+  legal: { disclaimer?: string; notOffer?: boolean };
+  neighbors?: Array<{ label: string; href: string; rel?: string }>;
+}
+const { brand, legal, neighbors = [] } = Astro.props;
+const year = new Date().getFullYear();
+---
+<footer class="bg-ink text-paper py-16">
+  <div class="container-page">
+    {neighbors.length > 0 && (
+      <nav aria-label="Соседние домены" class="mb-12">
+        <p class="font-ui text-xs uppercase tracking-[0.18em] text-sand-dim mb-4">
+          Смежные вопросы
+        </p>
+        <ul class="grid gap-3 sm:grid-cols-2">
+          {neighbors.map((n) => (
+            <li>
+              <a
+                href={n.href}
+                rel={n.rel || 'noopener'}
+                class="font-ui text-sm text-paper-dim underline underline-offset-4 decoration-graphite-3 hover:decoration-sand"
+              >
+                {n.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    )}
+
+    <Disclaimer legal={legal} />
+
+    <p class="mt-8 font-ui text-xs text-sand-dim">
+      © {year} {brand?.name?.trim() || '[ДАННЫЕ]'}
+    </p>
+  </div>
+</footer>
