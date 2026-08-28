@@ -9,8 +9,9 @@ const normalize = (s) =>
   String(s ?? '').toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
 
 // Поля, которые обязаны отличаться между доменами (п. 2.2).
+// Оффер (fonar) сюда не входит: одна акция застройщика законно живёт на нескольких доменах.
 const UNIQUE_FIELDS = [
-  ['fonar.strike', (c) => c.fonar?.strike],
+  ['insight.strike', (c) => c.insight?.strike],
   ['seo.h1', (c) => c.seo?.h1],
   ['seo.title', (c) => c.seo?.title],
   ['seo.description', (c) => c.seo?.description],

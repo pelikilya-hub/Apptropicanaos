@@ -60,7 +60,7 @@ hotfix/<slug>-<issue>   точечный фикс живого домена
 ## Структура
 
 ```
-packages/           общие пакеты: ui, fonar, quiz, explain, seo, analytics, legal, config
+packages/           общие пакеты: ui, fonar, insight, quiz, explain, seo, analytics, legal, config
 templates/landing/  скелет страницы, фиксированный порядок секций
 schemas/            landing.schema.json, quiz.schema.json
 tooling/            create / validate / build / uniqueness / forbidden
@@ -76,9 +76,15 @@ npm run validate:landing -- --prod  # плюс требования боевог
 npm run audit:uniqueness            # пересечения между доменами
 ```
 
-Валидатор блокирует сборку, если нет Фонаря, H1, типа, языка,
+Валидатор блокирует сборку, если нет разбора, H1, типа, языка,
 меньше 4 FAQ, меньше 3 разъяснений, а на проде — если пустой `domain`
 или в текстах остался `[ДАННЫЕ]`.
+
+Отдельно про оффер: **Фонарь** — блок с ценой, условиями, сроком и остатком.
+Срочность и дефицит допустимы только полями `fonar.deadline` и `fonar.scarcity`,
+каждое с `source` и `validUntil`. Нет источника или дата прошла — сборка падает;
+на живом домене блок скрывает себя сам. Те же слова в свободном тексте запрещены.
+Честный разбор живёт отдельным обязательным блоком `insight`.
 
 ## Секреты
 

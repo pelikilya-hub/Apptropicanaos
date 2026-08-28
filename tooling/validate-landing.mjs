@@ -57,8 +57,8 @@ if (!validateLanding(config)) {
 if (!config.type) fail('не задан type (area | audience | project | scenario | compare)');
 if (!config.language) fail('не задан language');
 if (!config.seo?.h1?.trim()) fail('пустой seo.h1');
-if (!config.fonar?.strike?.trim()) fail('Фонарь без удара (fonar.strike)');
-if (!config.fonar?.body?.trim()) fail('Фонарь без расшифровки (fonar.body)');
+if (!config.insight?.strike?.trim()) fail('Разбор без удара (insight.strike)');
+if (!config.insight?.body?.trim()) fail('Разбор без расшифровки (insight.body)');
 
 const faqCount = (config.faq ?? []).length;
 if (faqCount < 4) fail(`FAQ: ${faqCount} из минимум 4`);
@@ -66,29 +66,95 @@ if (faqCount < 4) fail(`FAQ: ${faqCount} из минимум 4`);
 const explainCount = (config.explanations ?? []).length;
 if (explainCount < 3) fail(`Разъяснения: ${explainCount} из минимум 3`);
 
-// ---------- 3. Фонарь: анатомия ----------
-if (config.fonar?.strike) {
-  const n = words(config.fonar.strike);
-  if (n < 12 || n > 22) fail(`Фонарь: удар ${n} слов, нужно 12–22`);
+// ---------- 3. Разбор: анатомия ----------
+if (config.insight?.strike) {
+  const n = words(config.insight.strike);
+  if (n < 12 || n > 22) fail(`Разбор: удар ${n} слов, нужно 12–22`);
 }
-if (config.fonar?.body) {
-  const sentences = config.fonar.body.split(/[.!?…]+\s/).filter((s) => s.trim().length > 1).length;
+if (config.insight?.body) {
+  const sentences = config.insight.body.split(/[.!?…]+\s/).filter((s) => s.trim().length > 1).length;
   if (sentences < 2 || sentences > 4) {
-    warn(`Фонарь: расшифровка ${sentences} предложения, по канону 2–4`);
+    warn(`Разбор: расшифровка ${sentences} предложения, по канону 2–4`);
   }
 }
 
-// ---------- 4. Фонарь уникален между ветками ----------
+// ---------- 3a. Фонарь: оффер ----------
+// Срочность и дефицит живут только здесь и только с источником и датой.
+// Протухшая дата роняет сборку: живой домен не должен показывать старую акцию.
+const offer = config.fonar;
+
+if (!offer || !offer.headline?.trim()) {
+  warn('Фонарь (оффер) не заполнен — блок схлопнется. Для type=project это почти всегда ошибка.');
+} else {
+  const TODAY = new Date();
+  TODAY.setHours(0, 0, 0, 0);
+
+  const checkDate = (iso, where) => {
+    const d = new Date(`${iso}T23:59:59`);
+    if (Number.isNaN(d.getTime())) {
+      fail(`Фонарь: ${where}.validUntil «${iso}» — не дата в формате ГГГГ-ММ-ДД`);
+      return;
+    }
+    const daysLeft = Math.ceil((d.getTime() - TODAY.getTime()) / 86_400_000);
+    if (daysLeft < 0) {
+      fail(`Фонарь: ${where}.validUntil ${iso} уже прошла. Обновите оффер или уберите блок.`);
+    } else if (daysLeft <= 3) {
+      warn(`Фонарь: ${where} истекает через ${daysLeft} дн. — блок скоро скроется сам`);
+    }
+  };
+
+  if (offer.price?.value?.trim() && !offer.price?.source?.trim()) {
+    fail('Фонарь: цена без price.source. Кто и когда её подтвердил?');
+  }
+  if (offer.price?.validUntil) checkDate(offer.price.validUntil, 'price');
+
+  if (offer.scarcity) {
+    if (!offer.scarcity.source?.trim()) {
+      fail('Фонарь: scarcity без источника — это фейковый дефицит');
+    }
+    if (!offer.scarcity.validUntil) {
+      fail('Фонарь: scarcity без validUntil — остаток протухнет и никто не заметит');
+    } else {
+      checkDate(offer.scarcity.validUntil, 'scarcity');
+    }
+    if (typeof offer.scarcity.remaining === 'number' && offer.scarcity.remaining === 0) {
+      fail('Фонарь: scarcity.remaining = 0. Оффер, которого больше нет, показывать нельзя.');
+    }
+  }
+
+  if (offer.deadline) {
+    if (!offer.deadline.source?.trim()) fail('Фонарь: deadline без источника');
+    if (!offer.deadline.validUntil) {
+      fail('Фонарь: deadline без validUntil');
+    } else {
+      checkDate(offer.deadline.validUntil, 'deadline');
+    }
+  }
+
+  if (offer.deadline?.showCountdown && !offer.deadline?.validUntil) {
+    fail('Фонарь: showCountdown без deadline.validUntil — обратный отсчёт не к чему привязать');
+  }
+}
+
+// ---------- 4. Разбор уникален между ветками ----------
+// Уникальность нужна именно разбору: это он кормит органику.
+// Оффер может повторяться (одна акция застройщика на нескольких доменах) — только предупреждаем.
 const normalize = (s) => String(s).toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
-if (config.fonar?.strike) {
-  const mine = normalize(config.fonar.strike);
+if (config.insight?.strike) {
+  const mine = normalize(config.insight.strike);
+  const myOffer = normalize(config.fonar?.headline ?? '');
+
   for (const other of listLandings()) {
     if (other === slug) continue;
     const file = join(landingDir(other), 'config.json');
     if (!existsSync(file)) continue;
     const otherCfg = JSON.parse(readFileSync(file, 'utf8'));
-    if (otherCfg.fonar?.strike && normalize(otherCfg.fonar.strike) === mine) {
-      fail(`Фонарь совпадает с landings/${other}: один удар не может стоять на двух доменах`);
+
+    if (otherCfg.insight?.strike && normalize(otherCfg.insight.strike) === mine) {
+      fail(`Разбор совпадает с landings/${other}: один удар не может стоять на двух доменах`);
+    }
+    if (myOffer && otherCfg.fonar?.headline && normalize(otherCfg.fonar.headline) === myOffer) {
+      warn(`оффер Фонаря совпадает с landings/${other} — убедитесь, что это одна и та же акция`);
     }
   }
 }

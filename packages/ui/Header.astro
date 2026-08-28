@@ -2,8 +2,10 @@
 // Каркас не знает имени компании. Бренд приходит из config.brand.
 interface Props {
   brand: { name?: string; homeLabel?: string; logoAlt?: string };
+  /** Есть ли у домена офферный блок — без него ссылка на #fonar никуда не ведёт. */
+  hasOffer?: boolean;
 }
-const { brand } = Astro.props;
+const { brand, hasOffer = false } = Astro.props;
 const name = brand?.name?.trim() || '[ДАННЫЕ]';
 ---
 <header class="border-b border-line">
@@ -12,9 +14,9 @@ const name = brand?.name?.trim() || '[ДАННЫЕ]';
       {name}
     </a>
     <nav class="hidden md:flex gap-6 font-ui text-sm text-muted">
-      <a href="#fonar" class="no-underline hover:text-graphite">Фонарь</a>
+      {hasOffer && <a href="#fonar" class="no-underline hover:text-graphite">Предложение</a>}
+      <a href="#insight" class="no-underline hover:text-graphite">Стоит понять</a>
       <a href="#quiz" class="no-underline hover:text-graphite">Разбор сценария</a>
-      <a href="#explain" class="no-underline hover:text-graphite">Разъяснения</a>
       <a href="#faq" class="no-underline hover:text-graphite">FAQ</a>
     </nav>
   </div>

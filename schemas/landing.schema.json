@@ -4,260 +4,643 @@
   "title": "Конфиг лендинга",
   "description": "Единственный источник правды ветки. Каркас не знает ничего, чего нет здесь.",
   "type": "object",
-  "required": ["slug", "language", "type", "intent", "seo", "fonar", "hero", "cta", "legal"],
+  "required": [
+    "slug",
+    "language",
+    "type",
+    "intent",
+    "seo",
+    "insight",
+    "hero",
+    "cta",
+    "legal"
+  ],
   "additionalProperties": true,
   "properties": {
-    "slug": { "type": "string", "pattern": "^(_example|[a-z0-9]+(-[a-z0-9]+)*)$", "description": "slug ветки. _example зарезервирован под шаблон в main." },
-    "domain": { "type": "string" },
-    "origin": { "type": "string" },
-    "language": { "type": "string", "enum": ["ru", "en", "th", "zh"] },
-    "type": { "type": "string", "enum": ["area", "audience", "project", "scenario", "compare"] },
-    "intent": { "type": "string", "enum": ["live", "invest", "both", "learn", "remote"] },
-
+    "slug": {
+      "type": "string",
+      "pattern": "^(_example|[a-z0-9]+(-[a-z0-9]+)*)$",
+      "description": "slug ветки. _example зарезервирован под шаблон в main."
+    },
+    "domain": {
+      "type": "string"
+    },
+    "origin": {
+      "type": "string"
+    },
+    "language": {
+      "type": "string",
+      "enum": [
+        "ru",
+        "en",
+        "th",
+        "zh"
+      ]
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "area",
+        "audience",
+        "project",
+        "scenario",
+        "compare"
+      ]
+    },
+    "intent": {
+      "type": "string",
+      "enum": [
+        "live",
+        "invest",
+        "both",
+        "learn",
+        "remote"
+      ]
+    },
     "geo": {
       "type": "object",
       "properties": {
-        "island": { "type": "string" },
-        "district": { "type": "string" },
-        "nearby": { "type": "array", "items": { "type": "string" } },
+        "island": {
+          "type": "string"
+        },
+        "district": {
+          "type": "string"
+        },
+        "nearby": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "anchors": {
           "type": "array",
           "items": {
             "oneOf": [
-              { "type": "string" },
+              {
+                "type": "string"
+              },
               {
                 "type": "object",
-                "required": ["name"],
-                "properties": { "name": { "type": "string" }, "note": { "type": "string" } }
+                "required": [
+                  "name"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "note": {
+                    "type": "string"
+                  }
+                }
               }
             ]
           }
         }
       }
     },
-
-    "audience": { "type": "string" },
-    "propertyTypes": { "type": "array", "items": { "type": "string" } },
-    "ownershipFocus": { "type": "string" },
-
+    "audience": {
+      "type": "string"
+    },
+    "propertyTypes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "ownershipFocus": {
+      "type": "string"
+    },
     "product": {
       "type": "object",
       "properties": {
-        "name": { "type": "string" },
-        "developer": { "type": "string" },
-        "stage": { "type": "string" },
-        "completion": { "type": "string" },
-        "unitRange": { "type": "string" },
-        "entryPrice": { "type": "string" },
-        "pricePerSqm": { "type": "string" }
+        "name": {
+          "type": "string"
+        },
+        "developer": {
+          "type": "string"
+        },
+        "stage": {
+          "type": "string"
+        },
+        "completion": {
+          "type": "string"
+        },
+        "unitRange": {
+          "type": "string"
+        },
+        "entryPrice": {
+          "type": "string"
+        },
+        "pricePerSqm": {
+          "type": "string"
+        }
       }
     },
-
     "brand": {
       "type": "object",
       "properties": {
-        "name": { "type": "string" },
-        "homeLabel": { "type": "string" },
-        "logoAlt": { "type": "string" }
+        "name": {
+          "type": "string"
+        },
+        "homeLabel": {
+          "type": "string"
+        },
+        "logoAlt": {
+          "type": "string"
+        }
       }
     },
-
     "seo": {
       "type": "object",
-      "required": ["title", "description", "h1"],
+      "required": [
+        "title",
+        "description",
+        "h1"
+      ],
       "properties": {
-        "title": { "type": "string", "minLength": 1, "maxLength": 70 },
-        "description": { "type": "string", "minLength": 1, "maxLength": 175 },
-        "h1": { "type": "string", "minLength": 1 }
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 70
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 175
+        },
+        "h1": {
+          "type": "string",
+          "minLength": 1
+        }
       }
     },
-
     "fonar": {
+      "description": "Фонарь — офферный блок: цена, условия, срок, остаток. Необязателен: у районного домена оффера может не быть. Срочность и дефицит допустимы ТОЛЬКО здесь и только с source и validUntil.",
       "type": "object",
-      "required": ["strike", "body"],
       "properties": {
-        "label": { "type": "string" },
-        "strike": { "type": "string", "minLength": 1 },
-        "body": { "type": "string", "minLength": 1 },
-        "splitYes": { "type": "string" },
-        "splitNo": { "type": "string" },
-        "ctaLabel": { "type": "string" },
-        "ctaHref": { "type": "string" }
+        "label": {
+          "type": "string"
+        },
+        "headline": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Суть оффера одной строкой."
+        },
+        "body": {
+          "type": "string"
+        },
+        "price": {
+          "type": "object",
+          "required": [
+            "value",
+            "source"
+          ],
+          "properties": {
+            "value": {
+              "type": "string",
+              "minLength": 1
+            },
+            "note": {
+              "type": "string"
+            },
+            "source": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Кто подтвердил цену и когда. Без источника цена не публикуется."
+            },
+            "validUntil": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            }
+          }
+        },
+        "terms": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "label"
+            ],
+            "properties": {
+              "label": {
+                "type": "string"
+              },
+              "value": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "scarcity": {
+          "description": "Остаток инвентаря. Обязательны source и validUntil — иначе это фейковый дефицит.",
+          "type": "object",
+          "required": [
+            "text",
+            "source",
+            "validUntil"
+          ],
+          "properties": {
+            "text": {
+              "type": "string",
+              "minLength": 1
+            },
+            "remaining": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "source": {
+              "type": "string",
+              "minLength": 1
+            },
+            "validUntil": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            }
+          }
+        },
+        "deadline": {
+          "description": "Срок действия условий. Обязательны source и validUntil в будущем.",
+          "type": "object",
+          "required": [
+            "validUntil",
+            "source"
+          ],
+          "properties": {
+            "text": {
+              "type": "string"
+            },
+            "validUntil": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            },
+            "source": {
+              "type": "string",
+              "minLength": 1
+            },
+            "showCountdown": {
+              "type": "boolean"
+            }
+          }
+        },
+        "ctaLabel": {
+          "type": "string"
+        },
+        "ctaHref": {
+          "type": "string"
+        }
       }
     },
-
     "hero": {
       "type": "object",
-      "required": ["lead"],
+      "required": [
+        "lead"
+      ],
       "properties": {
-        "eyebrow": { "type": "string" },
-        "lead": { "type": "string", "minLength": 1 },
-        "primaryCta": { "type": "string" },
-        "secondaryCta": { "type": "string" }
+        "eyebrow": {
+          "type": "string"
+        },
+        "lead": {
+          "type": "string",
+          "minLength": 1
+        },
+        "primaryCta": {
+          "type": "string"
+        },
+        "secondaryCta": {
+          "type": "string"
+        }
       }
     },
-
     "audienceFit": {
       "type": "object",
       "properties": {
-        "forWhom": { "type": "array", "items": { "type": "string" } },
-        "notForWhom": { "type": "array", "items": { "type": "string" } }
+        "forWhom": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "notForWhom": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
       }
     },
-
-    "quizPreset": { "type": "string" },
-
+    "quizPreset": {
+      "type": "string"
+    },
     "explanations": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["question", "body"],
+        "required": [
+          "question",
+          "body"
+        ],
         "properties": {
-          "question": { "type": "string", "minLength": 1 },
+          "question": {
+            "type": "string",
+            "minLength": 1
+          },
           "body": {
             "oneOf": [
-              { "type": "string", "minLength": 1 },
-              { "type": "array", "items": { "type": "string" }, "minItems": 1 }
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 1
+              }
             ]
           },
-          "beforeReserve": { "type": "string" },
-          "lawyer": { "type": "boolean" }
+          "beforeReserve": {
+            "type": "string"
+          },
+          "lawyer": {
+            "type": "boolean"
+          }
         }
       }
     },
-
     "faq": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["q", "a"],
+        "required": [
+          "q",
+          "a"
+        ],
         "properties": {
-          "q": { "type": "string", "minLength": 1 },
-          "a": { "type": "string", "minLength": 1 }
+          "q": {
+            "type": "string",
+            "minLength": 1
+          },
+          "a": {
+            "type": "string",
+            "minLength": 1
+          }
         }
       }
     },
-
     "units": {
       "type": "array",
       "items": {
         "type": "object",
         "properties": {
-          "type": { "type": "string" },
-          "bedrooms": { "type": "string" },
-          "area": { "type": "string" },
-          "view": { "type": "string" },
-          "anchor": { "type": "string" },
-          "ownership": { "type": "string" },
-          "status": { "type": "string" },
-          "price": { "type": "string" }
-        }
-      }
-    },
-
-    "budget": {
-      "type": "object",
-      "properties": {
-        "title": { "type": "string" },
-        "note": { "type": "string" },
-        "items": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "required": ["label"],
-            "properties": { "label": { "type": "string" }, "value": { "type": "string" } }
+          "type": {
+            "type": "string"
+          },
+          "bedrooms": {
+            "type": "string"
+          },
+          "area": {
+            "type": "string"
+          },
+          "view": {
+            "type": "string"
+          },
+          "anchor": {
+            "type": "string"
+          },
+          "ownership": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "price": {
+            "type": "string"
           }
         }
       }
     },
-
-    "afterKeys": {
+    "budget": {
       "type": "object",
       "properties": {
-        "title": { "type": "string" },
-        "items": { "type": "array", "items": { "type": "string" } },
-        "notItems": { "type": "array", "items": { "type": "string" } }
-      }
-    },
-
-    "comparison": {
-      "type": "object",
-      "properties": {
-        "title": { "type": "string" },
-        "left": { "type": "string" },
-        "right": { "type": "string" },
-        "rows": {
+        "title": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "items": {
           "type": "array",
           "items": {
             "type": "object",
-            "required": ["label"],
+            "required": [
+              "label"
+            ],
             "properties": {
-              "label": { "type": "string" },
-              "left": { "type": "string" },
-              "right": { "type": "string" }
+              "label": {
+                "type": "string"
+              },
+              "value": {
+                "type": "string"
+              }
             }
           }
         }
       }
     },
-
+    "afterKeys": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "notItems": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "comparison": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "left": {
+          "type": "string"
+        },
+        "right": {
+          "type": "string"
+        },
+        "rows": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "label"
+            ],
+            "properties": {
+              "label": {
+                "type": "string"
+              },
+              "left": {
+                "type": "string"
+              },
+              "right": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
     "neighbors": {
       "type": "array",
       "maxItems": 6,
       "items": {
         "type": "object",
-        "required": ["label", "href"],
+        "required": [
+          "label",
+          "href"
+        ],
         "properties": {
-          "label": { "type": "string", "minLength": 1 },
-          "href": { "type": "string", "format": "uri" },
-          "rel": { "type": "string" }
+          "label": {
+            "type": "string",
+            "minLength": 1
+          },
+          "href": {
+            "type": "string",
+            "format": "uri"
+          },
+          "rel": {
+            "type": "string"
+          }
         }
       }
     },
-
     "hreflang": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["lang", "url"],
+        "required": [
+          "lang",
+          "url"
+        ],
         "properties": {
-          "lang": { "type": "string" },
-          "url": { "type": "string", "format": "uri" }
+          "lang": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          }
         }
       }
     },
-
     "cta": {
       "type": "object",
-      "required": ["primaryChannel"],
+      "required": [
+        "primaryChannel"
+      ],
       "properties": {
         "primaryChannel": {
           "type": "string",
-          "enum": ["telegram", "whatsapp", "email", "form", "none"]
+          "enum": [
+            "telegram",
+            "whatsapp",
+            "email",
+            "form",
+            "none"
+          ]
         },
-        "primaryValue": { "type": "string" },
-        "afterQuiz": { "type": "boolean" },
-        "finalTitle": { "type": "string" },
-        "finalBody": { "type": "string" }
+        "primaryValue": {
+          "type": "string"
+        },
+        "afterQuiz": {
+          "type": "boolean"
+        },
+        "finalTitle": {
+          "type": "string"
+        },
+        "finalBody": {
+          "type": "string"
+        }
       }
     },
-
     "analytics": {
       "type": "object",
       "properties": {
-        "provider": { "type": "string", "enum": ["none", "datalayer"] }
+        "provider": {
+          "type": "string",
+          "enum": [
+            "none",
+            "datalayer"
+          ]
+        }
       }
     },
-
     "legal": {
       "type": "object",
-      "required": ["notOffer"],
+      "required": [
+        "notOffer"
+      ],
       "properties": {
-        "disclaimer": { "type": "string" },
-        "notOffer": { "type": "boolean", "const": true }
+        "disclaimer": {
+          "type": "string"
+        },
+        "notOffer": {
+          "type": "boolean",
+          "const": true
+        }
       }
     },
-
-    "forbiddenClaims": { "type": "array", "items": { "type": "string" } }
+    "forbiddenClaims": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "insight": {
+      "description": "Честный разбор «Стоит понять до просмотра». Кормит органику, оффером не является.",
+      "type": "object",
+      "required": [
+        "strike",
+        "body"
+      ],
+      "properties": {
+        "label": {
+          "type": "string"
+        },
+        "strike": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Удар 12–22 слова. Уникален среди всех веток."
+        },
+        "body": {
+          "type": "string",
+          "minLength": 1
+        },
+        "splitYes": {
+          "type": "string"
+        },
+        "splitNo": {
+          "type": "string"
+        },
+        "ctaLabel": {
+          "type": "string"
+        },
+        "ctaHref": {
+          "type": "string"
+        }
+      }
+    }
   }
 }

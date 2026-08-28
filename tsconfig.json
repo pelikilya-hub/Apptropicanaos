@@ -5,6 +5,7 @@
     "paths": {
       "@ui/*": ["packages/ui/*"],
       "@fonar/*": ["packages/fonar/*"],
+      "@insight/*": ["packages/insight/*"],
       "@quiz/*": ["packages/quiz/*"],
       "@explain/*": ["packages/explain/*"],
       "@seo/*": ["packages/seo/*"],

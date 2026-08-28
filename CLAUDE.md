@@ -13,10 +13,16 @@
 
 ## Железные правила
 
-- В каркас не зашивается имя комплекса, район, цена, застройщик, телефон, офер.
+- В каркас не зашивается имя комплекса, район, цена, застройщик, телефон, оффер.
   Всё уникальное приходит из `landings/<slug>/config.json`.
-- Факта нет в конфиге — пишем `[ДАННЫЕ]`. Цифры рынка, yield, юридические схемы,
-  отзывы и «осталось N вилл» не выдумываем никогда.
+- **Фонарь — офферный блок** (цена, условия, срок, остаток), необязательный.
+  **«Стоит понять до просмотра»** — честный разбор, обязателен всегда.
+  Первый конвертит, второй кормит органику.
+- Факта нет в конфиге — пишем `[ДАННЫЕ]`. Цифры рынка, yield, юридические схемы
+  и отзывы не выдумываем никогда.
+- Срок и остаток живут только полями `fonar.deadline` и `fonar.scarcity`,
+  каждое с `source` и `validUntil`. В свободном тексте «осталось N» и
+  «успей купить» роняют сборку. Прошедшая дата тоже.
 - Обратно в `main` из ветки лендинга едет только общее: баг компонента, токен,
   улучшение движка квиза. Контент комплекса в `main` не тащить.
 - Секреты аналитики в git не попадают. В конфиге — только имя провайдера.
@@ -48,7 +54,8 @@ npm run dev                                          # локальный про
 
 ```
 packages/ui        токены, сетка, кнопки, шапка/подвал, липкий CTA
-packages/fonar     блок Фонаря
+packages/fonar     Фонарь — офферный блок: цена, условия, срок, остаток
+packages/insight   «Стоит понять до просмотра» — честный разбор
 packages/quiz      движок квиза, пресеты, маршруты
 packages/explain   аккордеон разъяснений
 packages/seo       мета, canonical, og, schema
@@ -67,15 +74,17 @@ docs/memory/       реестр доменов и принятые решени�
 1. `docs/memory/landings-registry.md` — какие интенты уже заняты
 2. бриф от человека; чего нет — остаётся `[ДАННЫЕ]`
 3. `npm run new:landing`
-4. заполнение конфига (навыки `fonar-writing`, `seo-copy`, `quiz-preset`, `explain-writing`)
+4. заполнение конфига (навыки `insight-writing`, `fonar-writing`, `seo-copy`,
+   `quiz-preset`, `explain-writing`)
 5. `node tooling/validate-landing.mjs`
 6. приёмка по навыку `landing-acceptance`
 7. строка в реестр
 
 ## Навыки этого репозитория
 
-`fonar-writing` · `quiz-preset` · `explain-writing` · `seo-copy` ·
-`organic-guardrails` · `landing-acceptance` · `design-system` · `landing-memory`
+`fonar-writing` (оффер) · `insight-writing` (разбор) · `quiz-preset` ·
+`explain-writing` · `seo-copy` · `organic-guardrails` · `landing-acceptance` ·
+`design-system` · `landing-memory`
 
 Команды: `/new-landing` · `/check-landing` · `/landing-matrix`
 Агент: `landing-editor` — контент одной ветки, без правок каркаса.

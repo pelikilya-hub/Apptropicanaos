@@ -1,0 +1,72 @@
+---
+// «Стоит понять до просмотра» — блок честного разбора.
+// Это НЕ оффер: ни цены, ни срока, ни остатка здесь нет.
+// Задача: высветить неудобную правду связки «место × аудитория × формат»
+// и отличить домен от портала. Именно этот блок кормит органику.
+import { fact, has } from '@config/load.mjs';
+
+interface Props {
+  insight: {
+    label?: string;
+    strike?: string;
+    body?: string;
+    splitYes?: string;
+    splitNo?: string;
+    ctaLabel?: string;
+    ctaHref?: string;
+  };
+}
+const { insight } = Astro.props;
+const label = insight?.label?.trim() || 'Стоит понять до просмотра';
+const ctaHref = insight?.ctaHref || '#quiz';
+const ctaLabel = insight?.ctaLabel?.trim() || 'Разобрать мой сценарий';
+---
+<section id="insight" class="bg-ink text-paper relative overflow-hidden">
+  <!-- тёплый свет по кромке -->
+  <div
+    aria-hidden="true"
+    class="pointer-events-none absolute -top-32 left-1/2 -translate-x-1/2 h-64 w-[120%] opacity-40 blur-3xl"
+    style="background: radial-gradient(ellipse at center, var(--c-gold-soft), transparent 70%);"
+  >
+  </div>
+
+  <div class="container-page relative py-16 md:py-24">
+    <p class="font-ui text-xs uppercase tracking-[0.22em] text-sand mb-6">{label}</p>
+
+    <!-- удар: 12-22 слова, serif, крупно -->
+    <p class="font-display text-[1.6rem] leading-[1.25] md:text-[2.6rem] max-w-[22ch] md:max-w-[26ch]">
+      {fact(insight?.strike)}
+    </p>
+
+    <!-- тонкая золотая линия -->
+    <div class="h-px w-24 my-8" style="background: var(--c-gold);"></div>
+
+    <!-- расшифровка: 2-4 предложения -->
+    <p class="font-ui text-[1.02rem] leading-relaxed text-paper-dim max-w-measure">
+      {fact(insight?.body)}
+    </p>
+
+    <!-- развилка да/нет -->
+    {(has(insight?.splitYes) || has(insight?.splitNo)) && (
+      <dl class="mt-10 grid gap-6 sm:grid-cols-2 max-w-3xl">
+        <div class="border-l border-graphite-3 pl-5">
+          <dt class="font-ui text-xs uppercase tracking-[0.16em] text-sand mb-2">Вам сюда, если</dt>
+          <dd class="font-ui text-[0.98rem] text-paper-dim">{fact(insight?.splitYes)}</dd>
+        </div>
+        <div class="border-l border-graphite-3 pl-5">
+          <dt class="font-ui text-xs uppercase tracking-[0.16em] text-muted mb-2">Не сюда, если</dt>
+          <dd class="font-ui text-[0.98rem] text-paper-dim">{fact(insight?.splitNo)}</dd>
+        </div>
+      </dl>
+    )}
+
+    <a
+      href={ctaHref}
+      data-event="cta_click"
+      data-event-label="insight"
+      class="mt-10 inline-flex items-center justify-center min-h-[48px] px-6 rounded border border-gold text-paper font-ui text-[0.95rem] no-underline hover:bg-graphite-2 transition-colors"
+    >
+      {ctaLabel}
+    </a>
+  </div>
+</section>

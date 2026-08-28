@@ -9,6 +9,7 @@ import Section from '@ui/Section.astro';
 import Button from '@ui/Button.astro';
 import StickyCta from '@ui/StickyCta.astro';
 import Fonar from '@fonar/Fonar.astro';
+import Insight from '@insight/Insight.astro';
 import Quiz from '@quiz/Quiz.astro';
 import Explain from '@explain/Explain.astro';
 
@@ -20,7 +21,8 @@ const {
   type,
   seo = {},
   hero = {},
-  fonar = {},
+  fonar = null,
+  insight = {},
   audienceFit = {},
   explanations = [],
   faq = [],
@@ -48,7 +50,7 @@ const finalBody =
     'и только потом решаете, продолжать ли разговор.';
 ---
 <Layout landing={landing}>
-  <Header brand={brand} />
+  <Header brand={brand} hasOffer={Boolean(fonar && has(fonar.headline))} />
 
   <!-- 2. Hero -->
   <section class="bg-paper pt-16 pb-16 md:pt-24 md:pb-24">
@@ -70,7 +72,7 @@ const finalBody =
           {primaryCtaLabel}
         </Button>
         {has(hero?.secondaryCta) && (
-          <Button href="#fonar" variant="ghost" event="cta_click" eventLabel="hero_secondary">
+          <Button href="#insight" variant="ghost" event="cta_click" eventLabel="hero_secondary">
             {hero.secondaryCta}
           </Button>
         )}
@@ -78,10 +80,13 @@ const finalBody =
     </div>
   </section>
 
-  <!-- 3. Фонарь -->
-  <Fonar fonar={fonar} />
+  <!-- 3. Фонарь: офферный блок. Схлопывается, если оффера у домена нет. -->
+  {fonar && has(fonar.headline) && <Fonar fonar={fonar} />}
 
-  <!-- 4. Кому страница / антикому -->
+  <!-- 4. Стоит понять до просмотра: честный разбор, обязателен -->
+  <Insight insight={insight} />
+
+  <!-- 5. Кому страница / антикому -->
   {(has(audienceFit?.forWhom) || has(audienceFit?.notForWhom)) && (
     <Section id="fit" tone="paper" eyebrow="Кому эта страница">
       <div class="grid gap-10 md:grid-cols-2 max-w-4xl">
@@ -198,7 +203,7 @@ const finalBody =
     </Section>
   )}
 
-  <!-- 5 + 6. Квиз и маршрут -->
+  <!-- 6 + 7. Квиз и маршрут -->
   <Quiz slug={slug} preset={preset} analyticsProvider={provider} cta={cta} />
 
   <!-- Жизнь после ключей: только если в конфиге есть сервисный оффер -->
@@ -221,14 +226,14 @@ const finalBody =
     </Section>
   )}
 
-  <!-- 7. Здравые разъяснения -->
+  <!-- 8. Здравые разъяснения -->
   <Section id="explain" tone="paper" eyebrow="Здравые разъяснения" title="То, что стоит понять до депозита">
     <div class="max-w-3xl">
       <Explain items={explanations} />
     </div>
   </Section>
 
-  <!-- 8. FAQ -->
+  <!-- 9. FAQ -->
   {faq.length > 0 && (
     <Section id="faq" tone="dim" eyebrow="FAQ" title="Частые вопросы по этому фокусу">
       <div class="max-w-3xl divide-y divide-line border-y border-line">
@@ -245,7 +250,7 @@ const finalBody =
     </Section>
   )}
 
-  <!-- 9. Финальный CTA -->
+  <!-- 10. Финальный CTA -->
   <Section id="final" tone="dark">
     <div class="max-w-2xl">
       <h2 class="font-display text-[1.75rem] md:text-[2.5rem] mb-5">
@@ -265,7 +270,7 @@ const finalBody =
     </div>
   </Section>
 
-  <!-- 10. Footer + дисклеймер -->
+  <!-- 11. Footer + дисклеймер -->
   <Footer brand={brand} legal={legal} neighbors={neighbors} />
 
   <StickyCta label={primaryCtaLabel} href="#quiz" />

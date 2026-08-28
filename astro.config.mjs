@@ -23,6 +23,7 @@ export default defineConfig({
       alias: {
         '@ui': alias('./packages/ui'),
         '@fonar': alias('./packages/fonar'),
+        '@insight': alias('./packages/insight'),
         '@quiz': alias('./packages/quiz'),
         '@explain': alias('./packages/explain'),
         '@seo': alias('./packages/seo'),

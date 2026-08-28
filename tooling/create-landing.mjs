@@ -74,7 +74,9 @@ cfg.type = type;
 cfg.domain = '';
 cfg.origin = '';
 cfg.seo = { title: '', description: '', h1: '' };
-cfg.fonar = { ...cfg.fonar, strike: '', body: '', splitYes: '', splitNo: '' };
+cfg.insight = { ...cfg.insight, strike: '', body: '', splitYes: '', splitNo: '' };
+// Оффер не переносится из шаблона: цена и сроки у каждого домена свои.
+delete cfg.fonar;
 cfg.hero = { ...cfg.hero, eyebrow: '', lead: '' };
 cfg.faq = [];
 cfg.explanations = [];
@@ -96,7 +98,8 @@ console.log('\nОбязательно заполнить для этого ти�
 for (const f of REQUIRED_BY_TYPE[type]) console.log(`  – ${f}`);
 console.log('\nОбщий минимум для любой ветки:');
 console.log('  – seo.title / seo.description / seo.h1');
-console.log('  – fonar.strike (12–22 слова, уникален среди всех веток) + fonar.body');
+console.log('  – insight.strike (12–22 слова, уникален среди всех веток) + insight.body');
+console.log('  – fonar (оффер) — если есть: цена с source, срок и остаток с source + validUntil');
 console.log('  – 4+ FAQ, 3+ разъяснения');
 console.log('  – 2–5 neighbors с анкорами по интенту');
 console.log('  – domain / origin — только когда домен реально назначен');
