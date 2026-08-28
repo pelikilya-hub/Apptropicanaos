@@ -33,6 +33,11 @@ const deadline = fonar?.deadline;
 // Дата, после которой блок сам себя убирает: между деплоями оффер протухнуть не должен.
 const expiresAt = deadline?.validUntil || scarcity?.validUntil || '';
 
+// «По запросу» — не цифра, и набирать её крупным дисплейным кеглем нечестно:
+// плашка обещает число, которого нет. Без цифр в значении кегль опускается.
+const priceValue = fonar?.price?.value ?? '';
+const priceIsFigure = /\d/.test(priceValue);
+
 const humanDate = (iso?: string) => {
   if (!iso) return '';
   const d = new Date(`${iso}T23:59:59`);
@@ -83,7 +88,13 @@ const humanDate = (iso?: string) => {
 
       <!-- ценовая плашка -->
       <div class="bg-ink border border-graphite-3 rounded-lg p-6 md:p-8">
-        <p class="font-display text-[2rem] md:text-[2.4rem] leading-none">
+        <p
+          class={
+            priceIsFigure
+              ? 'font-display text-[2rem] md:text-[2.4rem] leading-none'
+              : 'font-display text-[1.35rem] md:text-[1.5rem] leading-snug text-paper-dim'
+          }
+        >
           {fact(fonar?.price?.value)}
         </p>
 
