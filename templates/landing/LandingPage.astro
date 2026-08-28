@@ -58,11 +58,7 @@ const finalBody =
   <Header brand={brand} hasOffer={Boolean(fonar && has(fonar.headline))} />
 
   <!-- 2. Hero -->
-  <Hero slug={slug} image={media.hero}>
-    {has(hero?.eyebrow) && (
-      <p class="eyebrow mb-6">{hero.eyebrow}</p>
-    )}
-
+  <Hero slug={slug} image={media.hero} eyebrow={has(hero?.eyebrow) ? hero.eyebrow : undefined}>
     <h1 class="text-h1 max-w-[18ch]">
       {fact(seo?.h1)}
     </h1>
@@ -71,7 +67,7 @@ const finalBody =
       {fact(hero?.lead)}
     </p>
 
-    <div class="mt-10 flex flex-wrap items-center gap-6">
+    <div class="mt-10 flex flex-wrap items-center gap-6" data-hero-cta>
       <Button href="#quiz" event="cta_click" eventLabel="hero_primary">
         {primaryCtaLabel}
       </Button>
@@ -276,7 +272,7 @@ const finalBody =
   )}
 
   <!-- 10. Финальный CTA -->
-  <Section id="final" tone="dark" ruled={false}>
+  <Section id="final" tone="dark" ruled={false} eyebrow="Дальше">
     <div class="max-w-2xl">
       <h2 class="text-h2 max-w-[20ch] mb-6">
         {finalTitle}
@@ -284,12 +280,7 @@ const finalBody =
       <p class="text-body text-paper-dim max-w-measure mb-10">
         {finalBody}
       </p>
-      <a
-        href="#quiz"
-        data-event="cta_click"
-        data-event-label="final"
-        class="inline-flex items-center justify-center min-h-[50px] px-7 rounded bg-teal text-paper text-small no-underline hover:bg-teal-bright transition-colors"
-      >
+      <a href="#quiz" data-event="cta_click" data-event-label="final" class="btn btn--primary">
         {primaryCtaLabel}
       </a>
     </div>

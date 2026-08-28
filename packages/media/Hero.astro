@@ -1,6 +1,6 @@
 ---
 // Первый экран. Кадр необязателен: без него секция схлопывается
-// в прежнюю текстовую вёрстку, с ним — текст слева, кадр справа.
+// в прежнюю текстовую вёрстку, с ним — раскладка подстраивается под кадр.
 //
 // Текст поверх рендера не кладём: читаемость заголовка на чужой картинке
 // не гарантирует никто, а H1 обязан читаться на любом кадре.
@@ -8,9 +8,11 @@ import { resolveImage } from './resolve.mjs';
 
 interface Props {
   slug: string;
+  /** Место и фокус страницы. Уходит в рейку — туда же, где ярлыки разделов. */
+  eyebrow?: string;
   image?: { src: string; alt: string; caption?: string };
 }
-const { slug, image } = Astro.props;
+const { slug, eyebrow, image } = Astro.props;
 
 const hero = image ? resolveImage(image, slug) : null;
 const shown = hero && !hero.missing ? hero : null;
@@ -20,50 +22,56 @@ const shown = hero && !hero.missing ? hero : null;
 // обрезать до неузнаваемости, поэтому он идёт во всю ширину под текстом.
 const landscape = shown?.width && shown?.height ? shown.width > shown.height : false;
 ---
-<section class="pt-14 pb-16 md:pt-20 md:pb-24">
-  <div class="container-page">
-    {!shown && <slot />}
+<section class="pt-10 pb-16 md:pt-14 md:pb-24">
+  <div class="container-page layout-rail">
+    <div class="rail">
+      {eyebrow && <p class="eyebrow rail__label">{eyebrow}</p>}
+    </div>
 
-    {shown && landscape && (
-      <>
-        <slot />
-        <figure class="m-0 mt-14">
-          <img
-            src={shown.src}
-            alt={shown.alt}
-            width={shown.width}
-            height={shown.height}
-            fetchpriority="high"
-            decoding="async"
-            class="w-full h-auto rounded bg-paper-dim"
-          />
-          {shown.caption && (
-            <figcaption class="mt-4 text-small text-muted max-w-measure">
-              {shown.caption}
-            </figcaption>
-          )}
-        </figure>
-      </>
-    )}
+    <div>
+      {!shown && <div data-reveal><slot /></div>}
 
-    {shown && !landscape && (
-      <div class="grid gap-12 lg:grid-cols-[1.05fr_1fr] lg:items-center lg:gap-16">
-        <div><slot /></div>
-        <figure class="m-0 lg:order-last">
-          <img
-            src={shown.src}
-            alt={shown.alt}
-            width={shown.width}
-            height={shown.height}
-            fetchpriority="high"
-            decoding="async"
-            class="w-full h-auto rounded object-cover aspect-[3/4] bg-paper-dim"
-          />
-          {shown.caption && (
-            <figcaption class="mt-4 text-small text-muted">{shown.caption}</figcaption>
-          )}
-        </figure>
-      </div>
-    )}
+      {shown && landscape && (
+        <>
+          <div data-reveal><slot /></div>
+          <figure class="m-0 mt-12" data-reveal style="--reveal-delay:120ms">
+            <img
+              src={shown.src}
+              alt={shown.alt}
+              width={shown.width}
+              height={shown.height}
+              fetchpriority="high"
+              decoding="async"
+              class="w-full h-auto rounded bg-paper-dim"
+            />
+            {shown.caption && (
+              <figcaption class="mt-4 text-small text-muted max-w-measure">
+                {shown.caption}
+              </figcaption>
+            )}
+          </figure>
+        </>
+      )}
+
+      {shown && !landscape && (
+        <div class="grid gap-12 lg:grid-cols-[1.05fr_1fr] lg:items-center lg:gap-16">
+          <div data-reveal><slot /></div>
+          <figure class="m-0 lg:order-last" data-reveal style="--reveal-delay:120ms">
+            <img
+              src={shown.src}
+              alt={shown.alt}
+              width={shown.width}
+              height={shown.height}
+              fetchpriority="high"
+              decoding="async"
+              class="w-full h-auto rounded object-cover aspect-[3/4] bg-paper-dim"
+            />
+            {shown.caption && (
+              <figcaption class="mt-4 text-small text-muted">{shown.caption}</figcaption>
+            )}
+          </figure>
+        </div>
+      )}
+    </div>
   </div>
 </section>

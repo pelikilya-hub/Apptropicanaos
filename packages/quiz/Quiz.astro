@@ -26,8 +26,12 @@ const contactHref = (() => {
 })();
 ---
 <section id="quiz" class="band band--ruled">
-  <div class="container-page">
-    <p class="eyebrow mb-4">Разбор сценария</p>
+  <div class="container-page layout-rail">
+    <div class="rail">
+      <p class="eyebrow rail__label">Разбор сценария</p>
+    </div>
+
+    <div data-reveal>
     <h2 class="text-h2 max-w-[20ch] mb-4">
       {total} вопросов — и вы увидите свой маршрут
     </h2>
@@ -61,18 +65,17 @@ const contactHref = (() => {
           </legend>
           {step.note && <p class="font-ui text-sm text-muted mb-6 max-w-measure">{step.note}</p>}
 
-          <div class="grid gap-3 mt-6">
+          <div class="grid gap-2.5 mt-6">
             {step.options.map((opt) => (
-              <label
-                class="flex items-start gap-3 min-h-[52px] px-5 py-3.5 bg-paper-dim border border-line rounded cursor-pointer transition-colors hover:border-line-strong has-[:checked]:border-teal has-[:checked]:bg-paper"
-              >
+              <label class="opt">
                 <input
                   type="radio"
                   name={step.id}
                   value={opt.id}
-                  class="mt-1 accent-[var(--c-teal)]"
+                  class="sr-only"
                   data-quiz-input
                 />
+                <span class="opt__mark" aria-hidden="true"><span class="opt__dot"></span></span>
                 <span class="font-ui text-[0.98rem]">
                   {opt.label}
                   {opt.hint && <span class="block text-sm text-muted">{opt.hint}</span>}
@@ -84,32 +87,26 @@ const contactHref = (() => {
       ))}
 
       <div class="flex items-center gap-4 mt-8" data-quiz-nav>
-        <button
-          type="button"
-          data-quiz-back
-          hidden
-          class="min-h-[48px] px-5 rounded border border-line font-ui text-sm hover:border-graphite-3 transition-colors"
-        >
+        <button type="button" data-quiz-back hidden class="btn btn--outline">
           Назад
         </button>
-        <button
-          type="button"
-          data-quiz-restart
-          hidden
-          class="font-ui text-sm text-muted underline underline-offset-4"
-        >
+        <button type="button" data-quiz-restart hidden class="btn btn--quiet text-muted">
           Начать заново
         </button>
       </div>
+    </div>
     </div>
   </div>
 </section>
 
 <!-- Маршрут после квиза -->
 <section id="route" class="band band--ruled" data-route-section hidden>
-  <div class="container-page max-w-2xl">
-    <p class="eyebrow mb-4">Ваш маршрут</p>
+  <div class="container-page layout-rail">
+    <div class="rail">
+      <p class="eyebrow rail__label">Ваш маршрут</p>
+    </div>
 
+    <div class="max-w-2xl">
     {routeIds.map((id) => {
       const r = (preset.routes as any)[id];
       return (
@@ -137,7 +134,7 @@ const contactHref = (() => {
               rel="noopener"
               data-event="cta_click"
               data-event-label={`route_${id}`}
-              class="mt-8 inline-flex items-center justify-center min-h-[48px] px-6 rounded bg-teal text-paper font-ui text-[0.95rem] no-underline hover:bg-teal-bright transition-colors"
+              class="btn btn--primary mt-8"
             >
               {r.ctaLabel || 'Обсудить сценарий'}
             </a>
@@ -149,6 +146,7 @@ const contactHref = (() => {
         </article>
       );
     })}
+    </div>
   </div>
 </section>
 
@@ -178,11 +176,28 @@ const contactHref = (() => {
     let state: QuizState = loadState(slug);
     let started = answeredCount(preset, state.answers) > 0;
 
-    function render(scroll = false) {
+    // Шаг сменяется коротким проявлением: видно, что ответ принят и экран
+    // переключился, а не что страница дёрнулась.
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const settle = (el: HTMLElement | null | undefined) => {
+      if (!el || reduced || !el.animate) return;
+      el.animate(
+        [
+          { opacity: 0, transform: 'translateY(6px)' },
+          { opacity: 1, transform: 'none' },
+        ],
+        { duration: 260, easing: 'cubic-bezier(.2,.7,.2,1)' }
+      );
+    };
+
+    function render(scroll = false, animate = false) {
       const idx = Math.min(state.step, total - 1);
 
       steps.forEach((el, i) => {
-        el.hidden = i !== idx || state.done;
+        const show = i === idx && !state.done;
+        const changed = el.hidden === show;
+        el.hidden = !show;
+        if (show && animate && changed) settle(el);
       });
 
       // Восстанавливаем выбранные ответы — назад без потери.
@@ -207,7 +222,10 @@ const contactHref = (() => {
         routeSection
           .querySelectorAll<HTMLElement>('[data-route]')
           .forEach((el) => (el.hidden = el.dataset.route !== routeId));
-        if (scroll) routeSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        if (scroll) {
+          routeSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          settle(routeSection.querySelector<HTMLElement>(`[data-route="${routeId}"]`));
+        }
       } else {
         routeSection.hidden = true;
       }
@@ -236,13 +254,13 @@ const contactHref = (() => {
       }
 
       saveState(slug, state);
-      render(true);
+      render(true, true);
     });
 
     backBtn.addEventListener('click', () => {
       state.step = Math.max(0, state.step - 1);
       saveState(slug, state);
-      render();
+      render(false, true);
     });
 
     restartBtn.addEventListener('click', () => {

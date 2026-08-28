@@ -29,14 +29,12 @@ const themeVars = [
         а токены каркаса объявлены на одинарном :root и выиграли бы по порядку.
         Удвоенный селектор поднимает специфичность и снимает зависимость от порядка. */}
     {themeVars && <style set:html={`:root:root{${themeVars}}`} />}
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600&family=Spectral:wght@300;400&display=swap"
-    />
   </head>
   <body>
     <slot />
+    <script>
+      import { initReveal } from '@ui/reveal';
+      initReveal();
+    </script>
   </body>
 </html>

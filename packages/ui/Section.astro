@@ -11,19 +11,26 @@ interface Props {
 }
 const { id, tone = 'paper', ruled = true, eyebrow, title, lead, class: cls = '' } = Astro.props;
 
-const tones = { paper: '', dark: 'bg-ink text-paper' } as const;
+const tones = { paper: '', dark: 'on-dark bg-ink text-paper' } as const;
 // Линия рисуется только на холсте: на тёмной плашке её роль играет сам фон.
 const rule = ruled && tone === 'paper' ? 'band--ruled' : '';
 ---
 <section id={id} class={`band ${rule} ${tones[tone]} ${cls}`}>
-  <div class="container-page">
-    {eyebrow && <p class={`eyebrow mb-4 ${tone === 'dark' ? 'text-sand' : ''}`}>{eyebrow}</p>}
-    {title && <h2 class="text-h2 max-w-[22ch]">{title}</h2>}
-    {lead && (
-      <p class={`mt-5 text-body max-w-measure ${tone === 'dark' ? 'text-paper-dim' : 'text-muted'}`}>
-        {lead}
-      </p>
-    )}
-    <div class={title || lead ? 'mt-12' : ''}><slot /></div>
+  <div class="container-page layout-rail">
+    <div class="rail">
+      {eyebrow && (
+        <p class={`eyebrow rail__label ${tone === 'dark' ? 'text-sand' : ''}`}>{eyebrow}</p>
+      )}
+    </div>
+
+    <div data-reveal>
+      {title && <h2 class="text-h2 max-w-[22ch]">{title}</h2>}
+      {lead && (
+        <p class={`mt-5 text-body max-w-measure ${tone === 'dark' ? 'text-paper-dim' : 'text-muted'}`}>
+          {lead}
+        </p>
+      )}
+      <div class={title || lead ? 'mt-12' : ''}><slot /></div>
+    </div>
   </div>
 </section>

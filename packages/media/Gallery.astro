@@ -12,10 +12,12 @@ const images = resolveAll(items, slug).filter((i) => !i.missing);
 ---
 {images.length > 0 && (
   <section id="gallery" class="band band--ruled">
-    <div class="container-page">
-      {eyebrow && (
-        <p class="eyebrow mb-4">{eyebrow}</p>
-      )}
+    <div class="container-page layout-rail">
+      <div class="rail">
+        {eyebrow && <p class="eyebrow rail__label">{eyebrow}</p>}
+      </div>
+
+      <div data-reveal>
       {title && (
         <h2 class="text-h2 max-w-[22ch] mb-5">{title}</h2>
       )}
@@ -52,6 +54,7 @@ const images = resolveAll(items, slug).filter((i) => !i.missing);
             )}
           </figure>
         ))}
+      </div>
       </div>
     </div>
 

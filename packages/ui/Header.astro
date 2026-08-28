@@ -7,17 +7,85 @@ interface Props {
 }
 const { brand, hasOffer = false } = Astro.props;
 const name = brand?.name?.trim() || '[ДАННЫЕ]';
+
+const links = [
+  hasOffer ? { href: '#fonar', label: 'Предложение' } : null,
+  { href: '#insight', label: 'Стоит понять' },
+  { href: '#quiz', label: 'Разбор сценария' },
+  { href: '#faq', label: 'FAQ' },
+].filter(Boolean) as { href: string; label: string }[];
 ---
-<header>
-  <div class="container-page flex items-center justify-between h-20">
+<header
+  data-header
+  class="md:sticky md:top-0 z-30 bg-paper border-b border-transparent transition-colors duration-200 data-[stuck]:border-line"
+>
+  <div class="container-page flex items-center justify-between h-[var(--header-h)]">
     <a href="/" class="font-display text-[1.15rem] no-underline" aria-label={brand?.logoAlt || name}>
       {name}
     </a>
     <nav class="hidden md:flex gap-8 text-small text-muted">
-      {hasOffer && <a href="#fonar" class="no-underline hover:text-graphite">Предложение</a>}
-      <a href="#insight" class="no-underline hover:text-graphite">Стоит понять</a>
-      <a href="#quiz" class="no-underline hover:text-graphite">Разбор сценария</a>
-      <a href="#faq" class="no-underline hover:text-graphite">FAQ</a>
+      {links.map((l) => (
+        <a
+          href={l.href}
+          data-nav-link
+          class="no-underline transition-colors duration-200 hover:text-graphite aria-[current=true]:text-graphite"
+        >
+          {l.label}
+        </a>
+      ))}
     </nav>
   </div>
 </header>
+
+<script>
+  // Шапка отзывается на положение страницы: линия появляется, когда контент
+  // ушёл под неё, а ссылка подсвечивается для раздела, который сейчас на экране.
+  const header = document.querySelector<HTMLElement>('[data-header]');
+  const links = [...document.querySelectorAll<HTMLAnchorElement>('[data-nav-link]')];
+
+  if (header) {
+    const onScroll = () => {
+      if (window.scrollY > 8) header.setAttribute('data-stuck', '');
+      else header.removeAttribute('data-stuck');
+    };
+    onScroll();
+    addEventListener('scroll', onScroll, { passive: true });
+  }
+
+  if (links.length && 'IntersectionObserver' in window) {
+    const byId = new Map<string, HTMLAnchorElement>();
+    const targets: Element[] = [];
+    for (const link of links) {
+      const id = link.getAttribute('href')?.slice(1);
+      const el = id && document.getElementById(id);
+      if (el) {
+        byId.set(id, link);
+        targets.push(el);
+      }
+    }
+
+    const visible = new Set<string>();
+    const paint = () => {
+      let current: string | null = null;
+      for (const el of targets) {
+        if (visible.has(el.id)) current = el.id;
+      }
+      for (const [id, link] of byId) {
+        if (id === current) link.setAttribute('aria-current', 'true');
+        else link.removeAttribute('aria-current');
+      }
+    };
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) visible.add(e.target.id);
+          else visible.delete(e.target.id);
+        }
+        paint();
+      },
+      { rootMargin: '-45% 0px -45% 0px' }
+    );
+    targets.forEach((t) => io.observe(t));
+  }
+</script>

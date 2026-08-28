@@ -1,4 +1,6 @@
 ---
+// Три роли на всю фабрику: действие, альтернатива, тихая ссылка.
+// Цвет действия один — если на странице появился второй, это ошибка вёрстки.
 interface Props {
   href: string;
   variant?: 'primary' | 'secondary' | 'ghost';
@@ -8,19 +10,15 @@ interface Props {
 }
 const { href, variant = 'primary', event, eventLabel, class: cls = '' } = Astro.props;
 
-const base =
-  'inline-flex items-center justify-center gap-2 min-h-[50px] px-7 rounded ' +
-  'text-small transition-colors duration-200 no-underline';
-
 const styles = {
-  primary: 'bg-teal text-paper hover:bg-teal-bright',
-  secondary: 'border border-line-strong text-graphite hover:border-graphite-3',
-  ghost: 'text-graphite underline underline-offset-4 decoration-line hover:decoration-graphite-3 px-0 min-h-0',
+  primary: 'btn--primary',
+  secondary: 'btn--outline',
+  ghost: 'btn--quiet',
 } as const;
 ---
 <a
   href={href}
-  class={`${base} ${styles[variant]} ${cls}`}
+  class={`btn ${styles[variant]} ${cls}`}
   data-event={event}
   data-event-label={eventLabel}
 >

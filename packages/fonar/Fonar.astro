@@ -47,10 +47,12 @@ const humanDate = (iso?: string) => {
 };
 ---
 <section id="fonar" class="band band--ruled" data-offer data-expires={expiresAt || undefined}>
-  <div class="container-page">
-    <p class="eyebrow mb-4" style="color: var(--c-gold);">{label}</p>
+  <div class="container-page layout-rail">
+    <div class="rail">
+      <p class="eyebrow rail__label" style="color: var(--c-gold);">{label}</p>
+    </div>
 
-    <div class="grid gap-12 lg:grid-cols-[1.25fr_1fr] lg:gap-16 lg:items-start">
+    <div class="grid gap-12 lg:grid-cols-[1.25fr_1fr] lg:gap-16 lg:items-start" data-reveal>
       <div>
         <h2 class="text-h2 max-w-[20ch]">{fact(fonar?.headline)}</h2>
 
@@ -108,7 +110,7 @@ const humanDate = (iso?: string) => {
           href={ctaHref}
           data-event="cta_click"
           data-event-label="fonar_offer"
-          class="mt-8 flex items-center justify-center min-h-[48px] w-full rounded bg-graphite text-paper text-small no-underline hover:bg-graphite-2 transition-colors"
+          class="btn btn--primary w-full mt-8"
         >
           {ctaLabel}
         </a>
