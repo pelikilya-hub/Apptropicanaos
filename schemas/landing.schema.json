@@ -486,6 +486,10 @@
         "galleryTitle": {
           "type": "string"
         },
+        "galleryNote": {
+          "type": "string",
+          "description": "Оговорка над кадрами. Если в галерее визуализации, а не съёмка — сказать это здесь."
+        },
         "gallery": {
           "type": "array",
           "items": {
