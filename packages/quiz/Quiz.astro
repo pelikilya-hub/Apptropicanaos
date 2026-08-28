@@ -25,13 +25,13 @@ const contactHref = (() => {
   return v;
 })();
 ---
-<section id="quiz" class="bg-paper-dim py-16 md:py-24">
+<section id="quiz" class="band band--ruled">
   <div class="container-page">
-    <p class="font-ui text-xs uppercase tracking-[0.18em] text-muted mb-3">Разбор сценария</p>
-    <h2 class="font-display text-[1.75rem] md:text-[2.5rem] max-w-measure mb-3">
+    <p class="eyebrow mb-4">Разбор сценария</p>
+    <h2 class="text-h2 max-w-[20ch] mb-4">
       {total} вопросов — и вы увидите свой маршрут
     </h2>
-    <p class="font-ui text-sm text-muted max-w-measure mb-10">
+    <p class="text-small text-muted max-w-measure mb-12">
       Ответы сохраняются в браузере. Назад можно вернуться без потери.
       Контакт не обязателен: маршрут вы увидите в любом случае.
     </p>
@@ -64,7 +64,7 @@ const contactHref = (() => {
           <div class="grid gap-3 mt-6">
             {step.options.map((opt) => (
               <label
-                class="flex items-start gap-3 min-h-[48px] px-4 py-3 bg-paper border border-line rounded cursor-pointer hover:border-graphite-3 transition-colors has-[:checked]:border-teal has-[:checked]:bg-paper"
+                class="flex items-start gap-3 min-h-[52px] px-5 py-3.5 bg-paper-dim border border-line rounded cursor-pointer transition-colors hover:border-line-strong has-[:checked]:border-teal has-[:checked]:bg-paper"
               >
                 <input
                   type="radio"
@@ -106,15 +106,15 @@ const contactHref = (() => {
 </section>
 
 <!-- Маршрут после квиза -->
-<section id="route" class="bg-paper py-16 md:py-24" data-route-section hidden>
+<section id="route" class="band band--ruled" data-route-section hidden>
   <div class="container-page max-w-2xl">
-    <p class="font-ui text-xs uppercase tracking-[0.18em] text-muted mb-3">Ваш маршрут</p>
+    <p class="eyebrow mb-4">Ваш маршрут</p>
 
     {routeIds.map((id) => {
       const r = (preset.routes as any)[id];
       return (
         <article data-route={id} hidden>
-          <h2 class="font-display text-[1.75rem] md:text-[2.4rem] mb-5">{r.title}</h2>
+          <h2 class="text-h2 mb-6 max-w-[22ch]">{r.title}</h2>
           <p class="font-ui text-[1.02rem] leading-relaxed text-muted max-w-measure">{r.body}</p>
 
           {r.outboundHref && (

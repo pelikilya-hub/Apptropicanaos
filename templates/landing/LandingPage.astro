@@ -60,18 +60,18 @@ const finalBody =
   <!-- 2. Hero -->
   <Hero slug={slug} image={media.hero}>
     {has(hero?.eyebrow) && (
-      <p class="font-ui text-xs uppercase tracking-[0.18em] text-muted mb-5">{hero.eyebrow}</p>
+      <p class="eyebrow mb-6">{hero.eyebrow}</p>
     )}
 
-    <h1 class="font-display text-[2rem] leading-[1.12] md:text-[3.25rem] max-w-[20ch]">
+    <h1 class="text-h1 max-w-[18ch]">
       {fact(seo?.h1)}
     </h1>
 
-    <p class="mt-6 font-ui text-[1.05rem] leading-relaxed text-muted max-w-measure">
+    <p class="mt-7 text-lead text-muted max-w-measure">
       {fact(hero?.lead)}
     </p>
 
-    <div class="mt-10 flex flex-wrap items-center gap-5">
+    <div class="mt-10 flex flex-wrap items-center gap-6">
       <Button href="#quiz" event="cta_click" eventLabel="hero_primary">
         {primaryCtaLabel}
       </Button>
@@ -99,21 +99,21 @@ const finalBody =
 
   <!-- 5. Кому страница / антикому -->
   {(has(audienceFit?.forWhom) || has(audienceFit?.notForWhom)) && (
-    <Section id="fit" tone="paper" eyebrow="Кому эта страница">
+    <Section id="fit"  eyebrow="Кому эта страница">
       <div class="grid gap-10 md:grid-cols-2 max-w-4xl">
         <div>
-          <h3 class="font-ui text-sm uppercase tracking-[0.14em] text-teal mb-5">Вам сюда</h3>
+          <h3 class="eyebrow mb-6" style="color: var(--c-teal);">Вам сюда</h3>
           <ul class="grid gap-3">
             {(audienceFit.forWhom || []).map((x: string) => (
-              <li class="font-ui text-[0.98rem] border-l border-line pl-4">{x}</li>
+              <li class="text-body border-l border-line pl-5">{x}</li>
             ))}
           </ul>
         </div>
         <div>
-          <h3 class="font-ui text-sm uppercase tracking-[0.14em] text-muted mb-5">Вам не сюда</h3>
+          <h3 class="eyebrow mb-6">Вам не сюда</h3>
           <ul class="grid gap-3">
             {(audienceFit.notForWhom || []).map((x: string) => (
-              <li class="font-ui text-[0.98rem] border-l border-line pl-4 text-muted">{x}</li>
+              <li class="text-body border-l border-line pl-5 text-muted">{x}</li>
             ))}
           </ul>
         </div>
@@ -123,13 +123,13 @@ const finalBody =
 
   <!-- Якоря района: только для type=area -->
   {type === 'area' && geoAnchors.length > 0 && (
-    <Section id="anchors" tone="dim" eyebrow="Якоря места" title="Что рядом и что это меняет">
+    <Section id="anchors"  eyebrow="Якоря места" title="Что рядом и что это меняет">
       <ul class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {geoAnchors.map((a: any) => (
-          <li class="bg-paper border border-line rounded p-5">
-            <p class="font-display text-[1.15rem] mb-2">{typeof a === 'string' ? a : a.name}</p>
+          <li class="bg-paper-dim border border-line rounded p-6">
+            <p class="font-display text-[1.2rem] mb-2">{typeof a === 'string' ? a : a.name}</p>
             {typeof a !== 'string' && a.note && (
-              <p class="font-ui text-sm text-muted">{a.note}</p>
+              <p class="text-small text-muted">{a.note}</p>
             )}
           </li>
         ))}
@@ -139,9 +139,9 @@ const finalBody =
 
   <!-- Мини-шахматка: только для type=project и только при реальных данных -->
   {type === 'project' && units.length > 0 && (
-    <Section id="units" tone="dim" eyebrow="Инвентарь" title="Что есть в продаже">
+    <Section id="units"  eyebrow="Инвентарь" title="Что есть в продаже">
       <div class="overflow-x-auto">
-        <table class="w-full min-w-[40rem] border-collapse font-ui text-sm">
+        <table class="w-full min-w-[40rem] border-collapse text-small">
           <thead>
             <tr class="text-left text-muted border-b border-line">
               <th class="py-3 pr-4 font-medium">Тип</th>
@@ -173,9 +173,9 @@ const finalBody =
 
   <!-- Сравнительная таблица: только для type=compare -->
   {type === 'compare' && comparison?.rows?.length > 0 && (
-    <Section id="compare" tone="dim" eyebrow="Сравнение" title={comparison.title || 'Два сценария рядом'}>
+    <Section id="compare"  eyebrow="Сравнение" title={comparison.title || 'Два сценария рядом'}>
       <div class="overflow-x-auto">
-        <table class="w-full min-w-[36rem] border-collapse font-ui text-sm">
+        <table class="w-full min-w-[36rem] border-collapse text-small">
           <thead>
             <tr class="text-left text-muted border-b border-line">
               <th class="py-3 pr-4 font-medium">Критерий</th>
@@ -199,17 +199,17 @@ const finalBody =
 
   <!-- Рамка бюджета: только если данные есть -->
   {has(budget?.items) && (
-    <Section id="budget" tone="paper" eyebrow="Рамка бюджета" title={budget.title || 'Из чего складывается сумма'}>
+    <Section id="budget"  eyebrow="Рамка бюджета" title={budget.title || 'Из чего складывается сумма'}>
       <ul class="grid gap-4 max-w-2xl">
         {budget.items.map((b: any) => (
-          <li class="flex justify-between gap-6 border-b border-line pb-3 font-ui text-[0.98rem]">
+          <li class="flex justify-between gap-6 border-b border-line py-3 text-body">
             <span>{b.label}</span>
             <span class="text-muted text-right">{fact(b.value)}</span>
           </li>
         ))}
       </ul>
       {has(budget?.note) && (
-        <p class="mt-6 font-ui text-sm text-muted max-w-measure">{budget.note}</p>
+        <p class="mt-8 text-small text-muted max-w-measure">{budget.note}</p>
       )}
     </Section>
   )}
@@ -233,17 +233,17 @@ const finalBody =
 
   <!-- Жизнь после ключей: только если в конфиге есть сервисный оффер -->
   {has(afterKeys?.items) && (
-    <Section id="after-keys" tone="dim" eyebrow="После ключей" title={afterKeys.title || 'Что дальше и кто это делает'}>
+    <Section id="after-keys"  eyebrow="После ключей" title={afterKeys.title || 'Что дальше и кто это делает'}>
       <div class="grid gap-6 md:grid-cols-2 max-w-4xl">
         <ul class="grid gap-3">
           {(afterKeys.items || []).map((x: string) => (
-            <li class="font-ui text-[0.98rem] border-l border-teal pl-4">{x}</li>
+            <li class="text-body border-l-2 border-teal pl-5">{x}</li>
           ))}
         </ul>
         {has(afterKeys?.notItems) && (
           <ul class="grid gap-3">
             {afterKeys.notItems.map((x: string) => (
-              <li class="font-ui text-[0.98rem] border-l border-line pl-4 text-muted">{x}</li>
+              <li class="text-body border-l border-line pl-5 text-muted">{x}</li>
             ))}
           </ul>
         )}
@@ -252,7 +252,7 @@ const finalBody =
   )}
 
   <!-- 8. Здравые разъяснения -->
-  <Section id="explain" tone="paper" eyebrow="Здравые разъяснения" title="То, что стоит понять до депозита">
+  <Section id="explain"  eyebrow="Здравые разъяснения" title="То, что стоит понять до депозита">
     <div class="max-w-3xl">
       <Explain items={explanations} />
     </div>
@@ -260,15 +260,15 @@ const finalBody =
 
   <!-- 9. FAQ -->
   {faq.length > 0 && (
-    <Section id="faq" tone="dim" eyebrow="FAQ" title="Частые вопросы по этому фокусу">
+    <Section id="faq"  eyebrow="FAQ" title="Частые вопросы по этому фокусу">
       <div class="max-w-3xl divide-y divide-line border-y border-line">
         {faq.map((item: any, i: number) => (
           <details name="faq" open={i === 0} class="group py-5">
-            <summary class="cursor-pointer list-none flex items-start justify-between gap-6 font-ui text-[1.02rem]">
+            <summary class="cursor-pointer list-none flex items-start justify-between gap-6 text-lead">
               <span class="max-w-measure">{item.q}</span>
               <span aria-hidden="true" class="mt-1 shrink-0 text-muted transition-transform group-open:rotate-45">+</span>
             </summary>
-            <p class="mt-4 font-ui text-[0.98rem] text-muted max-w-measure">{item.a}</p>
+            <p class="mt-5 text-body text-muted max-w-measure">{item.a}</p>
           </details>
         ))}
       </div>
@@ -276,19 +276,19 @@ const finalBody =
   )}
 
   <!-- 10. Финальный CTA -->
-  <Section id="final" tone="dark">
+  <Section id="final" tone="dark" ruled={false}>
     <div class="max-w-2xl">
-      <h2 class="font-display text-[1.75rem] md:text-[2.5rem] mb-5">
+      <h2 class="text-h2 max-w-[20ch] mb-6">
         {finalTitle}
       </h2>
-      <p class="font-ui text-[1.02rem] text-paper-dim max-w-measure mb-10">
+      <p class="text-body text-paper-dim max-w-measure mb-10">
         {finalBody}
       </p>
       <a
         href="#quiz"
         data-event="cta_click"
         data-event-label="final"
-        class="inline-flex items-center justify-center min-h-[48px] px-6 rounded bg-teal text-paper font-ui text-[0.95rem] no-underline hover:bg-teal-bright transition-colors"
+        class="inline-flex items-center justify-center min-h-[50px] px-7 rounded bg-teal text-paper text-small no-underline hover:bg-teal-bright transition-colors"
       >
         {primaryCtaLabel}
       </a>

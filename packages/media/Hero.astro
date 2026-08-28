@@ -20,7 +20,7 @@ const shown = hero && !hero.missing ? hero : null;
 // обрезать до неузнаваемости, поэтому он идёт во всю ширину под текстом.
 const landscape = shown?.width && shown?.height ? shown.width > shown.height : false;
 ---
-<section class="bg-paper pt-16 pb-16 md:pt-24 md:pb-24">
+<section class="pt-14 pb-16 md:pt-20 md:pb-24">
   <div class="container-page">
     {!shown && <slot />}
 
@@ -38,7 +38,7 @@ const landscape = shown?.width && shown?.height ? shown.width > shown.height : f
             class="w-full h-auto rounded bg-paper-dim"
           />
           {shown.caption && (
-            <figcaption class="mt-3 font-ui text-sm text-muted max-w-measure">
+            <figcaption class="mt-4 text-small text-muted max-w-measure">
               {shown.caption}
             </figcaption>
           )}
@@ -60,7 +60,7 @@ const landscape = shown?.width && shown?.height ? shown.width > shown.height : f
             class="w-full h-auto rounded object-cover aspect-[3/4] bg-paper-dim"
           />
           {shown.caption && (
-            <figcaption class="mt-3 font-ui text-sm text-muted">{shown.caption}</figcaption>
+            <figcaption class="mt-4 text-small text-muted">{shown.caption}</figcaption>
           )}
         </figure>
       </div>

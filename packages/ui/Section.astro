@@ -1,27 +1,29 @@
 ---
 interface Props {
   id?: string;
-  tone?: 'paper' | 'dim' | 'dark';
+  /** paper — холст страницы, dark — единственная тёмная плашка, ruled — с линией сверху */
+  tone?: 'paper' | 'dark';
+  ruled?: boolean;
   eyebrow?: string;
   title?: string;
+  lead?: string;
   class?: string;
 }
-const { id, tone = 'paper', eyebrow, title, class: cls = '' } = Astro.props;
+const { id, tone = 'paper', ruled = true, eyebrow, title, lead, class: cls = '' } = Astro.props;
 
-const tones = {
-  paper: 'bg-paper text-graphite',
-  dim: 'bg-paper-dim text-graphite',
-  dark: 'bg-ink text-paper',
-} as const;
+const tones = { paper: '', dark: 'bg-ink text-paper' } as const;
+// Линия рисуется только на холсте: на тёмной плашке её роль играет сам фон.
+const rule = ruled && tone === 'paper' ? 'band--ruled' : '';
 ---
-<section id={id} class={`${tones[tone]} py-16 md:py-24 ${cls}`}>
+<section id={id} class={`band ${rule} ${tones[tone]} ${cls}`}>
   <div class="container-page">
-    {eyebrow && (
-      <p class="font-ui text-xs uppercase tracking-[0.18em] text-muted mb-3">{eyebrow}</p>
+    {eyebrow && <p class={`eyebrow mb-4 ${tone === 'dark' ? 'text-sand' : ''}`}>{eyebrow}</p>}
+    {title && <h2 class="text-h2 max-w-[22ch]">{title}</h2>}
+    {lead && (
+      <p class={`mt-5 text-body max-w-measure ${tone === 'dark' ? 'text-paper-dim' : 'text-muted'}`}>
+        {lead}
+      </p>
     )}
-    {title && (
-      <h2 class="font-display text-[1.75rem] md:text-[2.5rem] max-w-measure mb-8">{title}</h2>
-    )}
-    <slot />
+    <div class={title || lead ? 'mt-12' : ''}><slot /></div>
   </div>
 </section>

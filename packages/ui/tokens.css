@@ -1,31 +1,51 @@
 /* Дизайн-токены каркаса. Общие для всех доменов.
-   Ветка НЕ переопределяет палитру — она меняет контент, а не тон системы. */
+   Ветка меняет только акцент через config.theme — структура и типографика общие.
+
+   Палитра снята с самой архитектуры проектов: белые объёмы, тёмные рамы
+   остекления, зелень склона, вода бассейна, закатная амбра. Поэтому основа —
+   почти белая и холодноватая, а не кремовая: кремовый фон спорит с белыми
+   стенами на фотографиях и делает страницу желтее, чем снятый объект. */
 :root {
-  /* Палитра: глубокий чёрный / тёплый графит / песок / тёплый белый /
-     приглушённый teal / тонкое тёплое золото. */
-  --c-ink: #0b0b0c;
-  --c-graphite: #171513;
-  --c-graphite-2: #262220;
-  --c-graphite-3: #3a3430;
-  --c-sand: #c8b596;
-  --c-sand-dim: #9a8a76;
-  --c-paper: #f6f2ea;
-  --c-paper-dim: #e3dccf;
-  --c-teal: #2f6f6a;
-  --c-teal-bright: #46908a;
-  --c-gold: #b8944f;
-  --c-gold-soft: rgba(184, 148, 79, 0.28);
+  /* Основа */
+  --c-paper: #fbfaf8;      /* холст: почти белый, едва тёплый */
+  --c-paper-dim: #f2efe9;  /* только карточки и вложенные блоки, не полосы во всю ширину */
+  --c-ink: #14171a;        /* тёмная плашка: холодный уголь, как рамы остекления */
+  --c-graphite: #1f2327;   /* основной текст */
+  --c-graphite-2: #2b3136;
+  --c-graphite-3: #3d454c;
+
+  /* Акценты. По умолчанию сдержанные, ветка сдвигает температуру. */
+  --c-teal: #1f6b6e;
+  --c-teal-bright: #2d8a8e;
+  --c-gold: #b8894a;
+  --c-gold-soft: rgba(184, 137, 74, 0.22);
+  --c-sand: #c3b49a;
+  --c-sand-dim: #8f8778;
 
   --c-bg: var(--c-paper);
   --c-fg: var(--c-graphite);
-  --c-muted: #6d635a;
-  --c-line: rgba(23, 21, 19, 0.12);
+  --c-muted: #6e747a;
 
-  /* Типографика: гротеск для UI, антиква для Фонаря и крупных мыслей. */
-  --f-ui: "Inter", "Helvetica Neue", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --f-display: "Lora", "Iowan Old Style", "Palatino Linotype", Georgia, "Times New Roman", serif;
+  /* Линия — волосяная. Секции разделяются ею и воздухом,
+     а не сменой фона: чередование полос читается как шаблон. */
+  --c-line: rgba(20, 23, 26, 0.09);
+  --c-line-strong: rgba(20, 23, 26, 0.16);
 
-  /* Ритм. Мобильный холст 390-430px — базовая единица от него. */
+  /* Типографика.
+     Spectral — дисплейная антиква с характером и родной кириллицей.
+     Golos Text — гротеск, спроектированный под русский текст. */
+  --f-ui: "Golos Text", "Helvetica Neue", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --f-display: "Spectral", "Iowan Old Style", Georgia, "Times New Roman", serif;
+
+  /* Шкала. Шаг крупнее прежнего: странице нужен воздух, а не плотность. */
+  --t-eyebrow: 0.72rem;
+  --t-small: 0.875rem;
+  --t-body: 1.0625rem;
+  --t-lead: 1.1875rem;
+  --t-h2: clamp(1.6rem, 1.1rem + 2.2vw, 2.6rem);
+  --t-h1: clamp(2.1rem, 1.2rem + 4.2vw, 3.6rem);
+  --t-strike: clamp(1.6rem, 1rem + 2.8vw, 2.9rem);
+
   --space-1: 0.25rem;
   --space-2: 0.5rem;
   --space-3: 0.75rem;
@@ -37,8 +57,8 @@
   --space-24: 6rem;
 
   --radius: 2px;
-  --radius-lg: 4px;
+  --radius-lg: 3px;
 
-  --measure: 62ch;
-  --container: 68rem;
+  --measure: 64ch;
+  --container: 72rem;
 }

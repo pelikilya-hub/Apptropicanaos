@@ -32,20 +32,20 @@ const poster = (v: Item) => {
 const videos = items.map((v) => ({ ...v, embed: embed(v), poster: poster(v) }));
 ---
 {videos.length > 0 && (
-  <section id="video" class="bg-ink text-paper py-16 md:py-24">
+  <section id="video" class="band band--ruled">
     <div class="container-page">
       {eyebrow && (
-        <p class="font-ui text-xs uppercase tracking-[0.18em] text-sand mb-3">{eyebrow}</p>
+        <p class="eyebrow mb-4">{eyebrow}</p>
       )}
       {title && (
-        <h2 class="font-display text-[1.75rem] md:text-[2.5rem] max-w-measure mb-8">{title}</h2>
+        <h2 class="text-h2 max-w-[22ch] mb-10">{title}</h2>
       )}
 
       <div class="grid gap-8 md:grid-cols-2">
         {videos.map((v) => (
           <figure class="m-0">
             <div
-              class="relative aspect-video rounded overflow-hidden bg-graphite-2"
+              class="relative aspect-video rounded overflow-hidden bg-paper-dim"
               data-video-embed={v.embed}
               data-video-title={v.title}
             >
@@ -72,7 +72,7 @@ const videos = items.map((v) => ({ ...v, embed: embed(v), poster: poster(v) }));
                 >▶</span>
               </button>
             </div>
-            <figcaption class="mt-4 font-ui text-sm text-paper-dim">{v.title}</figcaption>
+            <figcaption class="mt-4 text-small text-muted">{v.title}</figcaption>
           </figure>
         ))}
       </div>

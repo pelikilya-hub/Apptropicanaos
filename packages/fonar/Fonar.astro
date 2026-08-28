@@ -46,77 +46,60 @@ const humanDate = (iso?: string) => {
     : d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
 };
 ---
-<section
-  id="fonar"
-  class="bg-graphite text-paper relative overflow-hidden"
-  data-offer
-  data-expires={expiresAt || undefined}
->
-  <div
-    aria-hidden="true"
-    class="pointer-events-none absolute -top-24 right-0 h-72 w-[70%] opacity-50 blur-3xl"
-    style="background: radial-gradient(ellipse at center, var(--c-gold-soft), transparent 70%);"
-  >
-  </div>
+<section id="fonar" class="band band--ruled" data-offer data-expires={expiresAt || undefined}>
+  <div class="container-page">
+    <p class="eyebrow mb-4" style="color: var(--c-gold);">{label}</p>
 
-  <div class="container-page relative py-14 md:py-20">
-    <div class="grid gap-10 md:grid-cols-[1.2fr_1fr] md:items-start">
+    <div class="grid gap-12 lg:grid-cols-[1.25fr_1fr] lg:gap-16 lg:items-start">
       <div>
-        <p class="font-ui text-xs uppercase tracking-[0.22em] text-gold mb-5">{label}</p>
-
-        <p class="font-display text-[1.7rem] leading-[1.2] md:text-[2.4rem] max-w-[20ch]">
-          {fact(fonar?.headline)}
-        </p>
+        <h2 class="text-h2 max-w-[20ch]">{fact(fonar?.headline)}</h2>
 
         {has(fonar?.body) && (
-          <p class="mt-6 font-ui text-[1.02rem] leading-relaxed text-paper-dim max-w-measure">
-            {fonar.body}
-          </p>
+          <p class="mt-6 text-body text-muted max-w-measure">{fonar.body}</p>
         )}
 
         {terms.length > 0 && (
-          <dl class="mt-8 grid gap-x-8 gap-y-3 sm:grid-cols-2 max-w-xl">
+          <dl class="mt-10 max-w-xl">
             {terms.map((t) => (
-              <div class="flex justify-between gap-4 border-b border-graphite-3 pb-2">
-                <dt class="font-ui text-sm text-muted">{t.label}</dt>
-                <dd class="font-ui text-sm text-right">{fact(t.value)}</dd>
+              <div class="flex justify-between gap-6 border-b border-line py-3">
+                <dt class="text-small text-muted">{t.label}</dt>
+                <dd class="text-small text-right tabular-nums">{fact(t.value)}</dd>
               </div>
             ))}
           </dl>
         )}
       </div>
 
-      <!-- ценовая плашка -->
-      <div class="bg-ink border border-graphite-3 rounded-lg p-6 md:p-8">
+      <!-- Ценовая карточка: единственный залитый элемент блока -->
+      <aside class="bg-paper-dim border border-line rounded p-7 md:p-8">
         <p
           class={
             priceIsFigure
-              ? 'font-display text-[2rem] md:text-[2.4rem] leading-none'
-              : 'font-display text-[1.35rem] md:text-[1.5rem] leading-snug text-paper-dim'
+              ? 'font-display text-[2.1rem] md:text-[2.4rem] leading-none'
+              : 'font-display text-[1.3rem] md:text-[1.45rem] leading-snug text-muted'
           }
         >
           {fact(fonar?.price?.value)}
         </p>
 
         {has(fonar?.price?.note) && (
-          <p class="mt-3 font-ui text-sm text-muted">{fonar.price?.note}</p>
+          <p class="mt-3 text-small text-muted">{fonar.price?.note}</p>
         )}
 
-        <!-- Срок и остаток. Дата видна человеку, а не только валидатору. -->
         {(has(deadline?.text) || has(deadline?.validUntil)) && (
-          <p class="mt-6 font-ui text-sm text-sand">
+          <p class="mt-7 pt-5 border-t border-line text-small">
             {deadline?.text?.trim() || 'Условия действуют'} до {humanDate(deadline?.validUntil)}
             {deadline?.showCountdown && (
-              <span class="block mt-1 text-xs text-muted" data-countdown></span>
+              <span class="block mt-1 text-small text-muted tabular-nums" data-countdown></span>
             )}
           </p>
         )}
 
         {has(scarcity?.text) && (
-          <p class="mt-3 font-ui text-sm text-sand">
+          <p class="mt-3 text-small">
             {scarcity?.text}
             {typeof scarcity?.remaining === 'number' && (
-              <span class="ml-1 text-paper">— {scarcity.remaining}</span>
+              <span class="ml-1 tabular-nums" style="color: var(--c-gold);">— {scarcity.remaining}</span>
             )}
           </p>
         )}
@@ -125,20 +108,19 @@ const humanDate = (iso?: string) => {
           href={ctaHref}
           data-event="cta_click"
           data-event-label="fonar_offer"
-          class="mt-8 flex items-center justify-center min-h-[48px] w-full rounded bg-gold text-ink font-ui text-[0.95rem] no-underline hover:opacity-90 transition-opacity"
+          class="mt-8 flex items-center justify-center min-h-[48px] w-full rounded bg-graphite text-paper text-small no-underline hover:bg-graphite-2 transition-colors"
         >
           {ctaLabel}
         </a>
 
-        <!-- Источник цифр. Без него валидатор не пропускает срок и остаток. -->
         {(has(fonar?.price?.source) || has(scarcity?.source) || has(deadline?.source)) && (
-          <p class="mt-5 font-ui text-[0.7rem] leading-relaxed text-muted">
+          <p class="mt-5 text-[0.7rem] leading-relaxed text-muted">
             Источник: {[fonar?.price?.source, deadline?.source, scarcity?.source]
               .filter(Boolean)
               .join(' · ')}
           </p>
         )}
-      </div>
+      </aside>
     </div>
   </div>
 </section>

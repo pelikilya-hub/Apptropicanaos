@@ -8,12 +8,12 @@ interface Props {
 const { brand, hasOffer = false } = Astro.props;
 const name = brand?.name?.trim() || '[ДАННЫЕ]';
 ---
-<header class="border-b border-line">
-  <div class="container-page flex items-center justify-between h-16">
-    <a href="/" class="font-display text-lg no-underline" aria-label={brand?.logoAlt || name}>
+<header>
+  <div class="container-page flex items-center justify-between h-20">
+    <a href="/" class="font-display text-[1.15rem] no-underline" aria-label={brand?.logoAlt || name}>
       {name}
     </a>
-    <nav class="hidden md:flex gap-6 font-ui text-sm text-muted">
+    <nav class="hidden md:flex gap-8 text-small text-muted">
       {hasOffer && <a href="#fonar" class="no-underline hover:text-graphite">Предложение</a>}
       <a href="#insight" class="no-underline hover:text-graphite">Стоит понять</a>
       <a href="#quiz" class="no-underline hover:text-graphite">Разбор сценария</a>
