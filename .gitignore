@@ -8,3 +8,6 @@ dist/
 *.log
 .vercel/
 .wrangler/
+
+# мусор от прогонов Playwright с неразрешённым путём
+undefined/
